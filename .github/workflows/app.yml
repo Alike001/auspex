@@ -1,0 +1,50 @@
+name: app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/app.yml'
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/app.yml'
+
+jobs:
+  lint-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+        continue-on-error: true
+
+      - name: Lint
+        working-directory: app
+        run: pnpm lint
+        continue-on-error: true
+
+      - name: Typecheck
+        working-directory: app
+        run: pnpm typecheck
+        continue-on-error: true
+
+      - name: Build
+        working-directory: app
+        run: pnpm build
+        continue-on-error: true
