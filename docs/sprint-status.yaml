@@ -1,7 +1,7 @@
 project: Auspex
 hackathon: somnia-agentathon-2026
 deadline: "2026-06-10T23:59:00+01:00"
-repo: ""
+repo: "https://github.com/Alike001/auspex"
 thread_surface: ""
 thread_chat_id: ""
 thread_topic_id: ""
@@ -12,49 +12,49 @@ stories:
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING
     depends_on: []
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/1"
     pr_url: ""
     merged_at: ""
   - id: story-vendor-isomnia-interface
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING
     depends_on: [story-hardhat-foundry-scaffold]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/2"
     pr_url: ""
     merged_at: ""
   - id: story-escrow-factory-skeleton
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING
     depends_on: [story-vendor-isomnia-interface]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/3"
     pr_url: ""
     merged_at: ""
   - id: story-resolver-json-api-step
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING
     depends_on: [story-escrow-factory-skeleton]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/4"
     pr_url: ""
     merged_at: ""
   - id: story-resolver-parse-website-step
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING
     depends_on: [story-resolver-json-api-step]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/5"
     pr_url: ""
     merged_at: ""
   - id: story-resolver-llm-judge-step
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING
     depends_on: [story-resolver-parse-website-step]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/6"
     pr_url: ""
     merged_at: ""
   - id: story-cli-e2e-demo
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING
     depends_on: [story-resolver-llm-judge-step]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/7"
     pr_url: ""
     merged_at: ""
 
@@ -63,49 +63,49 @@ stories:
     epic: "Epic 2 — Frontend #1 (Human freelance flow)"
     status: PENDING
     depends_on: [story-hardhat-foundry-scaffold]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/8"
     pr_url: ""
     merged_at: ""
   - id: story-rainbowkit-wallet
     epic: "Epic 2 — Frontend #1 (Human freelance flow)"
     status: PENDING
     depends_on: [story-nextjs-scaffold]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/9"
     pr_url: ""
     merged_at: ""
   - id: story-signature-components
     epic: "Epic 2 — Frontend #1 (Human freelance flow)"
     status: PENDING
     depends_on: [story-nextjs-scaffold]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/10"
     pr_url: ""
     merged_at: ""
   - id: story-reasoning-trace-component
     epic: "Epic 2 — Frontend #1 (Human freelance flow)"
     status: PENDING
     depends_on: [story-signature-components]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/11"
     pr_url: ""
     merged_at: ""
   - id: story-jobs-feed-page
     epic: "Epic 2 — Frontend #1 (Human freelance flow)"
     status: PENDING
     depends_on: [story-rainbowkit-wallet, story-signature-components, story-cli-e2e-demo]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/12"
     pr_url: ""
     merged_at: ""
   - id: story-jobs-new-page
     epic: "Epic 2 — Frontend #1 (Human freelance flow)"
     status: PENDING
     depends_on: [story-jobs-feed-page]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/13"
     pr_url: ""
     merged_at: ""
   - id: story-jobs-detail-page
     epic: "Epic 2 — Frontend #1 (Human freelance flow)"
     status: PENDING
     depends_on: [story-jobs-new-page, story-reasoning-trace-component]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/14"
     pr_url: ""
     merged_at: ""
 
@@ -114,28 +114,28 @@ stories:
     epic: "Epic 3 — Bot scripts"
     status: PENDING
     depends_on: [story-cli-e2e-demo]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/15"
     pr_url: ""
     merged_at: ""
   - id: story-scraper-bot
     epic: "Epic 3 — Bot scripts"
     status: PENDING
     depends_on: [story-data-fetcher-bot]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/16"
     pr_url: ""
     merged_at: ""
   - id: story-bot-orchestrator-cli
     epic: "Epic 3 — Bot scripts"
     status: PENDING
     depends_on: [story-data-fetcher-bot, story-scraper-bot]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/17"
     pr_url: ""
     merged_at: ""
   - id: story-canonical-60s-recording
     epic: "Epic 3 — Bot scripts"
     status: PENDING
     depends_on: [story-bot-orchestrator-cli]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/18"
     pr_url: ""
     merged_at: ""
 
@@ -144,35 +144,35 @@ stories:
     epic: "Epic 4 — Frontend #2 (Bot dashboard)"
     status: PENDING
     depends_on: [story-signature-components]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/19"
     pr_url: ""
     merged_at: ""
   - id: story-bot-feed-row-component
     epic: "Epic 4 — Frontend #2 (Bot dashboard)"
     status: PENDING
     depends_on: [story-signature-components]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/20"
     pr_url: ""
     merged_at: ""
   - id: story-playback-engine
     epic: "Epic 4 — Frontend #2 (Bot dashboard)"
     status: PENDING
     depends_on: [story-canonical-60s-recording]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/21"
     pr_url: ""
     merged_at: ""
   - id: story-somnia-watch-stream
     epic: "Epic 4 — Frontend #2 (Bot dashboard)"
     status: PENDING
     depends_on: [story-playback-engine]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/22"
     pr_url: ""
     merged_at: ""
   - id: story-bots-dashboard-page
     epic: "Epic 4 — Frontend #2 (Bot dashboard)"
     status: PENDING
     depends_on: [story-trace-timeline-component, story-bot-feed-row-component, story-playback-engine, story-somnia-watch-stream]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/23"
     pr_url: ""
     merged_at: ""
 
@@ -181,35 +181,35 @@ stories:
     epic: "Epic 5 — Forge tests + polish + demo + submission"
     status: PENDING
     depends_on: [story-resolver-llm-judge-step]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/24"
     pr_url: ""
     merged_at: ""
   - id: story-final-deploy-shannon
     epic: "Epic 5 — Forge tests + polish + demo + submission"
     status: PENDING
     depends_on: [story-top-up-forge-tests, story-bots-dashboard-page]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/25"
     pr_url: ""
     merged_at: ""
   - id: story-vercel-production-deploy
     epic: "Epic 5 — Forge tests + polish + demo + submission"
     status: PENDING
     depends_on: [story-final-deploy-shannon]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/26"
     pr_url: ""
     merged_at: ""
   - id: story-demo-video-shoot-edit
     epic: "Epic 5 — Forge tests + polish + demo + submission"
     status: PENDING
     depends_on: [story-vercel-production-deploy, story-canonical-60s-recording]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/27"
     pr_url: ""
     merged_at: ""
   - id: story-readme-and-submission
     epic: "Epic 5 — Forge tests + polish + demo + submission"
     status: PENDING
     depends_on: [story-demo-video-shoot-edit, story-vercel-production-deploy, story-top-up-forge-tests]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/28"
     pr_url: ""
     merged_at: ""
 
@@ -218,13 +218,13 @@ stories:
     epic: "Epic 6 — Side-channel hire signal"
     status: PENDING
     depends_on: []
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/29"
     pr_url: ""
     merged_at: ""
   - id: story-open-first-somnia-pr
     epic: "Epic 6 — Side-channel hire signal"
     status: PENDING
     depends_on: [story-somnia-repo-scan]
-    issue_url: ""
+    issue_url: "https://github.com/Alike001/auspex/issues/30"
     pr_url: ""
     merged_at: ""
