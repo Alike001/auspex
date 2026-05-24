@@ -1,0 +1,21 @@
+{
+  "name": "@auspex/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Solidity contracts for Auspex — Forge tests + Hardhat deploys",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test -vvv",
+    "lint": "forge fmt --check",
+    "compile": "hardhat compile",
+    "deploy:shannon": "hardhat run script/deploy.ts --network somniaShannon"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  }
+}
