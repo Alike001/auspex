@@ -10,11 +10,11 @@ stories:
   # Epic 1 — Contract foundation + agent composition
   - id: story-hardhat-foundry-scaffold
     epic: "Epic 1 — Contract foundation + agent composition"
-    status: PENDING
+    status: DONE
     depends_on: []
     issue_url: "https://github.com/Alike001/auspex/issues/1"
     pr_url: ""
-    merged_at: ""
+    merged_at: "2026-05-24"
   - id: story-vendor-isomnia-interface
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING
