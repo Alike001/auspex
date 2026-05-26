@@ -64,10 +64,12 @@ contract AuspexResolver is IAuspexResolver {
         uint256 required = 3 * SomniaConstants.DEPOSIT_PER_CALL;
         if (msg.value < required) revert InsufficientDeposit(msg.value, required);
 
+        // Wrap deliveryUrl in a JSON-returning CORS proxy so the JSON API agent has
+        // something it can decode. Selector uses plain dot notation (per sdk-snippets §3).
         bytes memory payload = abi.encodeWithSelector(
             IJsonApiAgent.fetchString.selector,
-            deliveryUrl,
-            "$.status"
+            string.concat("https://api.allorigins.win/get?url=", deliveryUrl),
+            "status.url"
         );
 
         requestId = platform.createRequest{value: SomniaConstants.DEPOSIT_PER_CALL}(

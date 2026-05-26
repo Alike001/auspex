@@ -87,7 +87,9 @@ contract AuspexResolverTest is Test {
         assertEq(r.perAgentBudget, SomniaConstants.DEPOSIT_PER_CALL);
 
         bytes memory expected = abi.encodeWithSelector(
-            IJsonApiAgent.fetchString.selector, DELIVERY_URL, "$.status"
+            IJsonApiAgent.fetchString.selector,
+            string.concat("https://api.allorigins.win/get?url=", DELIVERY_URL),
+            "status.url"
         );
         assertEq(r.payload, expected);
     }

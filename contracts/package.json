@@ -8,7 +8,11 @@
     "test": "forge test -vvv",
     "lint": "forge fmt --check",
     "compile": "hardhat compile",
-    "deploy:shannon": "hardhat run script/deploy.ts --network somniaShannon"
+    "deploy:shannon": "hardhat run script/deploy.ts --network somniaShannon",
+    "demo:e2e": "hardhat run script/demo-e2e.ts --network somniaShannon"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
