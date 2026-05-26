@@ -28,6 +28,7 @@ contract Escrow is IEscrow {
     error TransferFailed();
     error NoResolverConfigured();
     error InsufficientBalance(uint256 have, uint256 need);
+    error AlreadyResolved();
 
     event JobDelivered(string deliveryUrl);
     event JobResolutionTriggered(address indexed resolver, uint256 requestId);
@@ -108,6 +109,7 @@ contract Escrow is IEscrow {
     /// @inheritdoc IEscrow
     function applyVerdict(string calldata _verdict, string calldata _reasoning) external override {
         if (msg.sender != resolver) revert OnlyResolver();
+        if (state == State.Resolved || state == State.Claimed) revert AlreadyResolved();
         if (state != State.Delivered) revert WrongState(State.Delivered, state);
         _applyVerdict(_verdict, _reasoning);
     }

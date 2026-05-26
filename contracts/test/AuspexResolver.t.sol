@@ -57,6 +57,13 @@ contract AuspexResolverTest is Test {
         parseReqId = jsonReqId + 1; // MockAgentPlatform issues sequential ids
     }
 
+    /// @dev Drive an escrow further through onParsed(Success, content) to land at Step.ParsedDelivery.
+    function _advanceToLLMStep(Escrow esc, string memory parsedContent) internal returns (uint256 llmReqId) {
+        uint256 parseReqId = _advanceToParseStep(esc);
+        platform.simulateCallback(parseReqId, _stringResponse(parsedContent), ResponseStatus.Success);
+        llmReqId = parseReqId + 1;
+    }
+
     function _stringResponse(string memory s) internal pure returns (Response[] memory rs) {
         rs = new Response[](1);
         rs[0].result = abi.encode(s);
@@ -192,7 +199,7 @@ contract AuspexResolverTest is Test {
         // LLM createRequest fired with correct agent + callback.
         MockAgentPlatform.CapturedRequest memory r = platform.capturedRequests(llmReqId);
         assertEq(r.agentId, SomniaConstants.LLM_AGENT_ID);
-        assertEq(r.callbackSelector, resolver.onJudged.selector);
+        assertEq(r.callbackSelector, resolver.onJudgment.selector);
         assertEq(r.perAgentBudget, SomniaConstants.DEPOSIT_PER_CALL);
     }
 
@@ -240,6 +247,104 @@ contract AuspexResolverTest is Test {
             _stringResponse("hi"),
             ResponseStatus.Success,
             _emptyRequest(parseReqId)
+        );
+    }
+
+    // ─────────── onParsed: LLM payload shape ───────────
+
+    function test_OnParsed_FiresLLMWithSpecPayload() public {
+        Escrow esc = _deployEscrow();
+        string memory content = "Heading: Pixel Shop. Tagline: pixel art for protocols.";
+        uint256 llmReqId = _advanceToLLMStep(esc, content);
+
+        MockAgentPlatform.CapturedRequest memory r = platform.capturedRequests(llmReqId);
+        assertEq(r.agentId, SomniaConstants.LLM_AGENT_ID);
+        assertEq(r.callbackSelector, resolver.onJudgment.selector);
+
+        string[] memory allowedValues = new string[](2);
+        allowedValues[0] = "released";
+        allowedValues[1] = "refunded";
+
+        string memory expectedPrompt = string.concat(
+            "Brief URI: ", BRIEF_URI, "\n",
+            "Delivered content extracted from URL: ", content, "\n",
+            "Does the delivered content satisfy the brief? Reply 'released' (yes) or 'refunded' (no)."
+        );
+        string memory expectedSystem =
+            "You are Auspex, an impartial arbiter. You judge whether delivered work satisfies a brief. Reply with one of the allowed values only.";
+
+        bytes memory expectedPayload = abi.encodeWithSelector(
+            ILLMAgent.inferString.selector,
+            expectedPrompt,
+            expectedSystem,
+            false,
+            allowedValues
+        );
+        assertEq(r.payload, expectedPayload);
+    }
+
+    // ─────────── onJudgment: Success "released" ───────────
+
+    function test_OnJudgment_SuccessReleasedAppliesVerdict() public {
+        Escrow esc = _deployEscrow();
+        string memory content = "Tagline matches the brief precisely.";
+        uint256 llmReqId = _advanceToLLMStep(esc, content);
+
+        platform.simulateCallback(llmReqId, _stringResponse("released"), ResponseStatus.Success);
+
+        assertEq(uint256(esc.state()), uint256(Escrow.State.Resolved));
+        assertEq(esc.verdict(), "released");
+        assertEq(
+            esc.reasoning(),
+            string.concat("Verdict: released ", unicode"·", " Evidence: ", content)
+        );
+
+        (address resEscrow,,,,) = resolver.resolutions(llmReqId);
+        assertEq(resEscrow, address(0));
+    }
+
+    // ─────────── onJudgment: Success "refunded" ───────────
+
+    function test_OnJudgment_SuccessRefundedAppliesVerdict() public {
+        Escrow esc = _deployEscrow();
+        string memory content = "Page is empty of meaningful content.";
+        uint256 llmReqId = _advanceToLLMStep(esc, content);
+
+        platform.simulateCallback(llmReqId, _stringResponse("refunded"), ResponseStatus.Success);
+
+        assertEq(uint256(esc.state()), uint256(Escrow.State.Resolved));
+        assertEq(esc.verdict(), "refunded");
+        assertEq(
+            esc.reasoning(),
+            string.concat("Verdict: refunded ", unicode"·", " Evidence: ", content)
+        );
+    }
+
+    // ─────────── onJudgment: Failed → default refund ───────────
+
+    function test_OnJudgment_FailedAppliesRefundDefault() public {
+        Escrow esc = _deployEscrow();
+        uint256 llmReqId = _advanceToLLMStep(esc, "any content");
+
+        platform.simulateCallback(llmReqId, _stringResponse(""), ResponseStatus.Failed);
+
+        assertEq(uint256(esc.state()), uint256(Escrow.State.Resolved));
+        assertEq(esc.verdict(), "refunded");
+        assertEq(esc.reasoning(), unicode"LLM judge timed out — defaulting to refund");
+    }
+
+    // ─────────── onJudgment: access control ───────────
+
+    function test_OnJudgment_RevertsForNonPlatformCaller() public {
+        Escrow esc = _deployEscrow();
+        uint256 llmReqId = _advanceToLLMStep(esc, "any");
+
+        vm.expectRevert(AuspexResolver.OnlyPlatform.selector);
+        resolver.onJudgment(
+            llmReqId,
+            _stringResponse("released"),
+            ResponseStatus.Success,
+            _emptyRequest(llmReqId)
         );
     }
 }
