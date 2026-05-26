@@ -64,10 +64,13 @@ contract AuspexResolver is IAuspexResolver {
         uint256 required = 3 * SomniaConstants.DEPOSIT_PER_CALL;
         if (msg.value < required) revert InsufficientDeposit(msg.value, required);
 
+        // Step 1 is a "service-alive" probe against a known stable JSON endpoint
+        // (CoinGecko ping, per sdk-snippets §3). Per-delivery reachability is
+        // handled by Step 2 (Parse Website), which actually fetches deliveryUrl.
         bytes memory payload = abi.encodeWithSelector(
             IJsonApiAgent.fetchString.selector,
-            deliveryUrl,
-            "$.status"
+            "https://api.coingecko.com/api/v3/ping",
+            "gecko_says"
         );
 
         requestId = platform.createRequest{value: SomniaConstants.DEPOSIT_PER_CALL}(

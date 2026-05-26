@@ -319,13 +319,34 @@ contract AuspexResolver {
 
 Brief content is stored off-chain (IPFS via Web3.Storage, or just a hosted JSON for v1) with the hash on-chain. v2 may move briefs to Somnia Data Streams.
 
-### 4.5 Deployed addresses (filled at submission)
+### 4.5 Deployed addresses (Shannon testnet)
 
-| Contract | Shannon address | Block | Explorer |
-|---|---|---|---|
-| EscrowFactory | `0x[TBD]` | [TBD] | [TBD] |
-| AuspexResolver | `0x[TBD]` | [TBD] | [TBD] |
-| Sample Escrow (demo job) | `0x[TBD]` | [TBD] | [TBD] |
+Addresses below are from the latest `pnpm run demo:e2e` run on 2026-05-26. The demo script redeploys both contracts each run; the addresses in `contracts/deployments/shannon.json` reflect the most recent deploy.
+
+| Contract | Shannon address |
+|---|---|
+| EscrowFactory | `0xaB5856136B531270253938C35fc1705FCed44EB9` |
+| AuspexResolver | `0x903e3b8F6b8Dc76178f6DA5cDe075CdD59E8bdBb` |
+| Sample Escrow (happy demo) | `0x91B64215A8FFA3A6d213D037a95c19Bbf818123B` |
+| Sample Escrow (negative demo) | `0x264CBb8F49f41eBb8CC1177971905bD589DDD106` |
+
+### 4.6 Live testnet status (2026-05-26)
+
+The end-to-end demo on Shannon executes the full deploy → fund → submit → resolve → claim flow in ~30–80 seconds per run. Two live-testnet findings worth documenting:
+
+**JSON API step:** initial design wrapped the delivery URL in `https://api.allorigins.win/get?url=...` as a JSON-returning CORS proxy. allorigins responded correctly from a local machine but the JSON API agent on Shannon returned `Failed` for every delivery URL we tried through it. Step 1 was changed to use the SDK-snippets §3 example endpoint (`https://api.coingecko.com/api/v3/ping`, selector `gecko_says`) as a stable service-alive probe. Step 2 (Parse Website) is still the only step that actually fetches `deliveryUrl`. Trade-off: Step 1 no longer per-call probes the delivery URL — that remains as a follow-up for a custom probe endpoint.
+
+**Parse Website agent:** as of 2026-05-26, the Parse Website agent (`12875401142070969085`) returns `ResponseStatus.Failed` on Shannon for every URL we tested, including the `https://news.ycombinator.com` example from the Somnia SDK docs. Tested URLs: Vercel-hosted `text/html` pages (thin + rich), gist raw URLs (`text/plain`), and the SDK doc's own Hacker News example. Tx hashes for diagnostic runs:
+
+| URL | Escrow | Claim tx |
+|---|---|---|
+| `https://auspex-demo-pages.vercel.app/correct.html` | `0x91B64215A8FFA3A6d213D037a95c19Bbf818123B` | `0x32cece736e5c9262331cbbccc7dc523b0f3f12e8c337c5df7e5bdb3cb1e137db` |
+| `https://news.ycombinator.com` | `0x988B966C4c4b5Fb0699B638Fcb21Bb0C5a8627Ee` | `0x8144e6c610c8b17668772df5f492e77c8d1928bb8a72c4483596a11937c4b0cb` |
+| `https://auspex-demo-pages.vercel.app/wrong.html` (--negative) | `0x264CBb8F49f41eBb8CC1177971905bD589DDD106` | `0x71999eadb31e9aae77c5bca3bfda804184a9b82dd820039a1dc46931d1fdca0c` |
+
+In all three runs Step 1 (CoinGecko ping) succeeded and Step 2 returned `Failed`. The AuspexResolver's defensive fallback applies a `"refunded"` verdict with reasoning `"Could not parse delivered page"`, and the client successfully claims the escrowed STT. This is the designed-for behaviour when an agent in the composition fails — verified live on testnet.
+
+The 3-step composition logic itself is verified by the integration test suite (`forge test`: 37/37 passing) against a `MockAgentPlatform`. When the Parse Website agent recovers on Shannon, the same demo script will produce a `"released"` verdict for the happy path without any contract changes — the resolver code, agent IDs, payload encodings, and state machine remain spec-correct.
 
 ---
 

@@ -87,7 +87,9 @@ contract AuspexResolverTest is Test {
         assertEq(r.perAgentBudget, SomniaConstants.DEPOSIT_PER_CALL);
 
         bytes memory expected = abi.encodeWithSelector(
-            IJsonApiAgent.fetchString.selector, DELIVERY_URL, "$.status"
+            IJsonApiAgent.fetchString.selector,
+            "https://api.coingecko.com/api/v3/ping",
+            "gecko_says"
         );
         assertEq(r.payload, expected);
     }
