@@ -5,6 +5,7 @@ import {
     IAgentRequester,
     IJsonApiAgent,
     IParseWebsiteAgent,
+    ILLMAgent,
     Request,
     Response,
     ResponseStatus
@@ -14,14 +15,12 @@ import {IEscrow} from "./interfaces/IEscrow.sol";
 import {SomniaConstants} from "./SomniaConstants.sol";
 
 /// @title  AuspexResolver
-/// @notice Step 1 of the 3-step agent composition: ask the JSON API agent to confirm the
-///         delivered URL is reachable. On Success, hand off to the Parse Website agent
-///         (next story). On Failed, refund the client.
+/// @notice 3-step agent composition: JSON API (reachability) → Parse Website (content) → LLM (verdict).
 contract AuspexResolver is IAuspexResolver {
     enum Step {
-        None,             // awaiting JSON API result
-        FetchedMetadata,  // awaiting Parse Website result
-        ParsedSite        // awaiting LLM judge result
+        None,            // awaiting JSON API result
+        FetchedMetadata, // awaiting Parse Website result
+        ParsedDelivery   // awaiting LLM judge result
     }
 
     struct Resolution {
@@ -29,6 +28,7 @@ contract AuspexResolver is IAuspexResolver {
         Step    step;
         string  briefURI;
         string  deliveryUrl;
+        string  parsedContent;
     }
 
     IAgentRequester public immutable platform;
@@ -52,7 +52,7 @@ contract AuspexResolver is IAuspexResolver {
         _;
     }
 
-    // ─────────── entry point (called by Escrow.resolve) ───────────
+    // ─────────── entry point ───────────
 
     function startResolution(
         address escrow,
@@ -80,13 +80,14 @@ contract AuspexResolver is IAuspexResolver {
             escrow: escrow,
             step: Step.None,
             briefURI: briefURI,
-            deliveryUrl: deliveryUrl
+            deliveryUrl: deliveryUrl,
+            parsedContent: ""
         });
 
         emit ResolutionStarted(escrow, requestId, deliveryUrl);
     }
 
-    // ─────────── callbacks (called by platform) ───────────
+    // ─────────── step 1 callback: JSON API metadata ───────────
 
     function onMetadata(
         uint256 requestId,
@@ -97,44 +98,104 @@ contract AuspexResolver is IAuspexResolver {
         Resolution memory res = resolutions[requestId];
         if (res.escrow == address(0)) revert UnknownRequest(requestId);
 
-        if (status == ResponseStatus.Success) {
-            bytes memory payload = abi.encodeWithSelector(
-                IParseWebsiteAgent.ExtractString.selector,
-                "summary",
-                "One-paragraph summary of the page",
-                new string[](0),
-                "Summarise the page in one paragraph",
-                res.deliveryUrl,
-                false,
-                uint8(1)
-            );
-
-            uint256 nextRequestId = platform.createRequest{value: SomniaConstants.DEPOSIT_PER_CALL}(
-                SomniaConstants.PARSE_WEBSITE_AGENT_ID,
-                address(this),
-                this.onParse.selector,
-                payload
-            );
-
-            resolutions[nextRequestId] = Resolution({
-                escrow: res.escrow,
-                step: Step.FetchedMetadata,
-                briefURI: res.briefURI,
-                deliveryUrl: res.deliveryUrl
-            });
-
-            delete resolutions[requestId];
-            emit StepAdvanced(requestId, nextRequestId, Step.FetchedMetadata);
-        } else {
+        if (status != ResponseStatus.Success) {
             delete resolutions[requestId];
             IEscrow(res.escrow).applyVerdict("refunded", "URL unreachable");
             emit ResolutionFailed(res.escrow, requestId, "URL unreachable");
+            return;
         }
+
+        bytes memory payload = abi.encodeWithSelector(
+            IParseWebsiteAgent.ExtractString.selector,
+            "content",
+            "Main visible content of the delivered page",
+            new string[](0),
+            "Extract the main visible content focused on headings and primary copy",
+            res.deliveryUrl,
+            false,
+            uint8(1)
+        );
+
+        uint256 nextRequestId = platform.createRequest{value: SomniaConstants.DEPOSIT_PER_CALL}(
+            SomniaConstants.PARSE_WEBSITE_AGENT_ID,
+            address(this),
+            this.onParsed.selector,
+            payload
+        );
+
+        resolutions[nextRequestId] = Resolution({
+            escrow: res.escrow,
+            step: Step.FetchedMetadata,
+            briefURI: res.briefURI,
+            deliveryUrl: res.deliveryUrl,
+            parsedContent: ""
+        });
+
+        delete resolutions[requestId];
+        emit StepAdvanced(requestId, nextRequestId, Step.FetchedMetadata);
     }
 
-    /// @dev Implemented in story-resolver-parse-website-step. For now, just validates the requestId
-    ///      and advances the step so the warning about view mutability is silenced.
-    function onParse(
+    // ─────────── step 2 callback: parse website ───────────
+
+    function onParsed(
+        uint256 requestId,
+        Response[] memory responses,
+        ResponseStatus status,
+        Request memory /* request */
+    ) external onlyPlatform {
+        Resolution memory res = resolutions[requestId];
+        if (res.escrow == address(0)) revert UnknownRequest(requestId);
+
+        if (status != ResponseStatus.Success) {
+            delete resolutions[requestId];
+            IEscrow(res.escrow).applyVerdict("refunded", "Could not parse delivered page");
+            emit ResolutionFailed(res.escrow, requestId, "Could not parse delivered page");
+            return;
+        }
+
+        string memory parsed = _decodeStringResponse(responses);
+
+        if (bytes(parsed).length == 0) {
+            delete resolutions[requestId];
+            IEscrow(res.escrow).applyVerdict("refunded", "Delivered page returned no content");
+            emit ResolutionFailed(res.escrow, requestId, "Delivered page returned no content");
+            return;
+        }
+
+        string[] memory allowedValues = new string[](2);
+        allowedValues[0] = "released";
+        allowedValues[1] = "refunded";
+
+        bytes memory payload = abi.encodeWithSelector(
+            ILLMAgent.inferString.selector,
+            _buildLLMPrompt(res.briefURI, parsed),
+            "You are an impartial judge deciding whether the delivered content satisfies the brief.",
+            true,
+            allowedValues
+        );
+
+        uint256 nextRequestId = platform.createRequest{value: SomniaConstants.DEPOSIT_PER_CALL}(
+            SomniaConstants.LLM_AGENT_ID,
+            address(this),
+            this.onJudged.selector,
+            payload
+        );
+
+        resolutions[nextRequestId] = Resolution({
+            escrow: res.escrow,
+            step: Step.ParsedDelivery,
+            briefURI: res.briefURI,
+            deliveryUrl: res.deliveryUrl,
+            parsedContent: parsed
+        });
+
+        delete resolutions[requestId];
+        emit StepAdvanced(requestId, nextRequestId, Step.ParsedDelivery);
+    }
+
+    // ─────────── step 3 callback (stub for story-resolver-llm-judge-step) ───────────
+
+    function onJudged(
         uint256 requestId,
         Response[] memory /* responses */,
         ResponseStatus /* status */,
@@ -142,6 +203,27 @@ contract AuspexResolver is IAuspexResolver {
     ) external onlyPlatform {
         Resolution memory res = resolutions[requestId];
         if (res.escrow == address(0)) revert UnknownRequest(requestId);
-        resolutions[requestId].step = Step.ParsedSite;
+        delete resolutions[requestId];
+    }
+
+    // ─────────── helpers ───────────
+
+    function _decodeStringResponse(Response[] memory responses) private pure returns (string memory) {
+        if (responses.length == 0) return "";
+        bytes memory raw = responses[0].result;
+        if (raw.length == 0) return "";
+        return abi.decode(raw, (string));
+    }
+
+    function _buildLLMPrompt(string memory briefURI, string memory parsed)
+        private
+        pure
+        returns (string memory)
+    {
+        return string.concat(
+            "Brief URI: ", briefURI,
+            "\n\nDelivered content:\n", parsed,
+            "\n\nDoes the delivered content satisfy the brief? Reply 'released' or 'refunded'."
+        );
     }
 }
