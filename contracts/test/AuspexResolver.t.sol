@@ -88,8 +88,8 @@ contract AuspexResolverTest is Test {
 
         bytes memory expected = abi.encodeWithSelector(
             IJsonApiAgent.fetchString.selector,
-            string.concat("https://api.allorigins.win/get?url=", DELIVERY_URL),
-            "status.url"
+            "https://api.coingecko.com/api/v3/ping",
+            "gecko_says"
         );
         assertEq(r.payload, expected);
     }

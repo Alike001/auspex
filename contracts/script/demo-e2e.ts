@@ -38,7 +38,7 @@ const escrowAbi = (require("../artifacts/src/Escrow.sol/Escrow.json") as { abi: 
 
 dotenv.config({ path: ".env.local" });
 
-const NEGATIVE = process.argv.includes("--negative");
+const NEGATIVE = process.argv.includes("--negative") || process.env.NEGATIVE === "1";
 
 function need(name: string): string {
   const v = process.env[name];
