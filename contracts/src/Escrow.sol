@@ -2,6 +2,8 @@
 pragma solidity ^0.8.24;
 
 import {IEscrow} from "./interfaces/IEscrow.sol";
+import {IAuspexResolver} from "./interfaces/IAuspexResolver.sol";
+import {SomniaConstants} from "./SomniaConstants.sol";
 
 /// @title  Escrow
 /// @notice Per-job escrow with a 4-state lifecycle. Deployed by EscrowFactory.
@@ -24,8 +26,11 @@ contract Escrow is IEscrow {
     error InvalidDelivery();
     error NotEntitled();
     error TransferFailed();
+    error NoResolverConfigured();
+    error InsufficientBalance(uint256 have, uint256 need);
 
     event JobDelivered(string deliveryUrl);
+    event JobResolutionTriggered(address indexed resolver, uint256 requestId);
     event JobResolved(string verdict, string reasoning);
     event JobClaimed(address indexed receiver, uint256 amount);
 
@@ -77,6 +82,27 @@ contract Escrow is IEscrow {
         if (resolver == address(0)) {
             _applyVerdict("released", "stubbed");
         }
+    }
+
+    /// @notice Kick off the agent-arbitrated resolution. Forwards 0.36 STT (3 × DEPOSIT_PER_CALL)
+    ///         to the configured resolver, which fires the JSON API agent and waits for callbacks.
+    /// @dev    Anyone can call this — the State.Delivered guard is the access control.
+    function resolve() external returns (uint256 requestId) {
+        if (state != State.Delivered) revert WrongState(State.Delivered, state);
+        if (resolver == address(0)) revert NoResolverConfigured();
+
+        uint256 deposit = 3 * SomniaConstants.DEPOSIT_PER_CALL;
+        if (address(this).balance < deposit) {
+            revert InsufficientBalance(address(this).balance, deposit);
+        }
+
+        requestId = IAuspexResolver(resolver).startResolution{value: deposit}(
+            address(this),
+            briefURI,
+            deliveryUrl
+        );
+
+        emit JobResolutionTriggered(resolver, requestId);
     }
 
     /// @inheritdoc IEscrow
