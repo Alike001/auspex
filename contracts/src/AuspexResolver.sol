@@ -42,6 +42,7 @@ contract AuspexResolver is IAuspexResolver {
     event ResolutionStarted(address indexed escrow, uint256 indexed requestId, string deliveryUrl);
     event StepAdvanced(uint256 indexed oldRequestId, uint256 indexed newRequestId, Step newStep);
     event ResolutionFailed(address indexed escrow, uint256 indexed requestId, string reason);
+    event VerdictApplied(address indexed escrow, uint256 indexed requestId, string verdict, string reasoning);
 
     constructor(IAgentRequester _platform) {
         platform = _platform;
@@ -169,15 +170,15 @@ contract AuspexResolver is IAuspexResolver {
         bytes memory payload = abi.encodeWithSelector(
             ILLMAgent.inferString.selector,
             _buildLLMPrompt(res.briefURI, parsed),
-            "You are an impartial judge deciding whether the delivered content satisfies the brief.",
-            true,
+            "You are Auspex, an impartial arbiter. You judge whether delivered work satisfies a brief. Reply with one of the allowed values only.",
+            false,
             allowedValues
         );
 
         uint256 nextRequestId = platform.createRequest{value: SomniaConstants.DEPOSIT_PER_CALL}(
             SomniaConstants.LLM_AGENT_ID,
             address(this),
-            this.onJudged.selector,
+            this.onJudgment.selector,
             payload
         );
 
@@ -193,17 +194,36 @@ contract AuspexResolver is IAuspexResolver {
         emit StepAdvanced(requestId, nextRequestId, Step.ParsedDelivery);
     }
 
-    // ─────────── step 3 callback (stub for story-resolver-llm-judge-step) ───────────
+    // ─────────── step 3 callback: LLM verdict ───────────
 
-    function onJudged(
+    function onJudgment(
         uint256 requestId,
-        Response[] memory /* responses */,
-        ResponseStatus /* status */,
+        Response[] memory responses,
+        ResponseStatus status,
         Request memory /* request */
     ) external onlyPlatform {
         Resolution memory res = resolutions[requestId];
         if (res.escrow == address(0)) revert UnknownRequest(requestId);
+
+        if (status != ResponseStatus.Success) {
+            delete resolutions[requestId];
+            string memory timeoutReason = unicode"LLM judge timed out — defaulting to refund";
+            IEscrow(res.escrow).applyVerdict("refunded", timeoutReason);
+            emit VerdictApplied(res.escrow, requestId, "refunded", timeoutReason);
+            return;
+        }
+
+        string memory rawVerdict = _decodeStringResponse(responses);
+        string memory finalVerdict =
+            keccak256(bytes(rawVerdict)) == keccak256(bytes("released")) ? "released" : "refunded";
+
+        string memory reasoning = string.concat(
+            "Verdict: ", finalVerdict, unicode" · Evidence: ", res.parsedContent
+        );
+
         delete resolutions[requestId];
+        IEscrow(res.escrow).applyVerdict(finalVerdict, reasoning);
+        emit VerdictApplied(res.escrow, requestId, finalVerdict, reasoning);
     }
 
     // ─────────── helpers ───────────
@@ -221,9 +241,9 @@ contract AuspexResolver is IAuspexResolver {
         returns (string memory)
     {
         return string.concat(
-            "Brief URI: ", briefURI,
-            "\n\nDelivered content:\n", parsed,
-            "\n\nDoes the delivered content satisfy the brief? Reply 'released' or 'refunded'."
+            "Brief URI: ", briefURI, "\n",
+            "Delivered content extracted from URL: ", parsed, "\n",
+            "Does the delivered content satisfy the brief? Reply 'released' (yes) or 'refunded' (no)."
         );
     }
 }

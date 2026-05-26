@@ -45,11 +45,11 @@ stories:
     merged_at: "2026-05-26"
   - id: story-resolver-llm-judge-step
     epic: "Epic 1 — Contract foundation + agent composition"
-    status: PENDING
+    status: DONE
     depends_on: [story-resolver-parse-website-step]
     issue_url: "https://github.com/Alike001/auspex/issues/6"
     pr_url: ""
-    merged_at: ""
+    merged_at: "2026-05-26"
   - id: story-cli-e2e-demo
     epic: "Epic 1 — Contract foundation + agent composition"
     status: PENDING

@@ -135,6 +135,30 @@ contract EscrowTest is Test {
         esc.applyVerdict("refunded", "client wins");
     }
 
+    function test_ApplyVerdict_RevertsWhenAlreadyResolved() public {
+        Escrow esc = _deployResolverEscrow(address(this));
+
+        vm.prank(deliverer);
+        esc.submitDelivery("https://example.com/delivery");
+
+        // First call succeeds.
+        esc.applyVerdict("released", "looks good");
+
+        // Second call reverts with AlreadyResolved.
+        vm.expectRevert(Escrow.AlreadyResolved.selector);
+        esc.applyVerdict("refunded", "changed my mind");
+    }
+
+    function test_ApplyVerdict_RevertsWhenStateOpen() public {
+        Escrow esc = _deployResolverEscrow(address(this));
+
+        // No delivery yet — state is Open. applyVerdict should revert WrongState.
+        vm.expectRevert(
+            abi.encodeWithSelector(Escrow.WrongState.selector, Escrow.State.Delivered, Escrow.State.Open)
+        );
+        esc.applyVerdict("released", "premature");
+    }
+
     function test_Claim_RefundedPathPaysClient() public {
         // This test contract acts as the resolver
         Escrow esc = _deployResolverEscrow(address(this));
