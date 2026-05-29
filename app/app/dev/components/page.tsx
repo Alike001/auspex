@@ -3,11 +3,38 @@
   import { StatusPill, type Status } from "@/components/StatusPill";
   import { JobCard, JobsEmpty } from "@/components/JobCard";
   import { DeliveryPreview } from "@/components/DeliveryPreview";
+  import { ReasoningTrace } from "@/components/ReasoningTrace";
+  import type { Step } from "@/components/ReasoningTrace.types";
+
 
   const STATUSES: Status[] = ["open", "judging", "released", "refunded", "claimed"];
 
   const PARTY_A = { address: "0x7a8f9c2b4e1d6a3f" };
   const PARTY_B = { address: "0x9d1c4b7e2a8f0021" };
+
+    const TRACE_DONE: Step[] = [
+    { status: "success", label: "JSON API verified URL", detail: "200 OK · landing.example.com" },
+    { status: "success", label: "Parsed page content", detail: "Extracted 1,240 chars of visible text", tone: "info" },
+    { status: "success", label: "Verdict: released", detail: "Delivery satisfies the brief", tone: "accent", txHash: "0xabc123def456ff21" },
+  ];
+
+  const TRACE_LIVE: Step[] = [
+    { status: "success", label: "JSON API verified URL", detail: "200 OK" },
+    { status: "inProgress", label: "Parsing page content…", detail: "LLM extracting visible text" },
+    { status: "pending", label: "Run verdict" },
+  ];
+
+  const TRACE_ERROR: Step[] = [
+    { status: "success", label: "JSON API verified URL", detail: "200 OK" },
+    { status: "error", label: "Parse page content", error: "Could not parse delivered page" },
+  ];
+
+  const TRACE_REFUNDED: Step[] = [
+    { status: "success", label: "JSON API verified URL", detail: "200 OK" },
+    { status: "success", label: "Parsed page content", tone: "info" },
+    { status: "success", label: "Verdict: refunded", detail: "Delivery does not satisfy the brief", tone: "danger", txHash: "0xdead000000beef21" },
+  ];
+
 
   function Section({ title, children }: { title: string; children: React.ReactNode }) {
     return (
@@ -89,6 +116,27 @@
             <DeliveryPreview />
           </div>
         </Section>
+
+           <Section title="ReasoningTrace">
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <ReasoningTrace steps={TRACE_DONE} />
+            </div>
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <ReasoningTrace steps={TRACE_LIVE} />
+            </div>
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <ReasoningTrace steps={TRACE_ERROR} />
+            </div>
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <ReasoningTrace steps={TRACE_REFUNDED} />
+            </div>
+            <div className="rounded-lg border border-border bg-surface p-5">
+              <ReasoningTrace steps={[]} />
+            </div>
+          </div>
+        </Section>
+
       </main>
     );
   }
