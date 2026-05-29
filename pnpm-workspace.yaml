@@ -1,8 +1,8 @@
- packages:
+packages:
   - "app"
   - "contracts"
   - "bots"
 
-  ignoredBuiltDependencies:
-    - sharp
-    - unrs-resolver
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
