@@ -1,0 +1,57 @@
+  @import "tailwindcss";
+
+  @theme {
+    /* surfaces */
+    --color-bg: #050507;
+    --color-surface: #0a0a0f;
+    --color-surface-hi: #0d0d13;
+    --color-border: #1a1a22;
+    --color-border-strong: #2a2a35;
+
+    /* accent (violet) */
+    --color-accent: #8b5cf6;
+    --color-accent-light: #a78bfa;
+
+    /* status */
+    --color-success: #34d399;
+    --color-danger: #f87171;
+    --color-warning: #fbbf24;
+
+    /* text */
+    --color-text-primary: #e4e4e7;
+    --color-text-secondary: #a1a1aa;
+    --color-text-muted: #71717a;
+
+    /* fonts — set by next/font in layout.tsx */
+    --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Monaco, monospace;
+  }
+
+  :root { color-scheme: dark; }
+
+  html, body { background: var(--color-bg); }
+
+  body {
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* brand helpers ported from the landing page */
+  .grad {
+    background: linear-gradient(180deg, #a78bfa 0%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: center;
+    mask-image: radial-gradient(ellipse at top, rgba(0,0,0,0.7), transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at top, rgba(0,0,0,0.7), transparent 70%);
+  }
+
