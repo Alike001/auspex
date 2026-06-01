@@ -21,6 +21,18 @@ export const escrowFactoryAbi = [
     outputs: [{ type: "address[]" }],
   },
   {
+    type: "function",
+    name: "createJob",
+    stateMutability: "payable",
+    inputs: [
+      { name: "_briefHash", type: "bytes32" },
+      { name: "_briefURI", type: "string" },
+      { name: "_deliverer", type: "address" },
+      { name: "_deadline", type: "uint256" },
+    ],
+    outputs: [{ name: "escrow", type: "address" }],
+  },
+  {
     type: "event",
     name: "JobCreated",
     inputs: [
