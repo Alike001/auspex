@@ -19,6 +19,8 @@ contract SomniaConstantsTest is Test {
     }
 
     function test_DepositPerCallMatchesSpec() public pure {
-        assertEq(SomniaConstants.DEPOSIT_PER_CALL, 12e16);
+        // 0.5 STT — raised from 0.12 because the LLM-backed Parse Website / Inference
+        // agents need ~0.30 execution budget; 0.12 failed with `insufficient_budget`.
+        assertEq(SomniaConstants.DEPOSIT_PER_CALL, 5e17);
     }
 }
