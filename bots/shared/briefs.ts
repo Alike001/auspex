@@ -19,23 +19,30 @@ export type Brief = {
   expectedExtract: string;
 };
 
+// Targets are the project's own demo pages on Vercel. They are small, static, and
+// purpose-built to be parseable by Somnia's Parse Website agent — generic sites
+// (example.org, w3.org, httpbin) return "Could not parse delivered page" from the
+// agent even when they scrape fine locally. correct.html satisfies the brief
+// (→ released); wrong.html does not (→ a genuine, agent-judged refund).
+const DEMO = "https://auspex-demo-pages.vercel.app";
+
 export const BRIEFS: Brief[] = [
   {
-    id: "example-com-heading",
-    text: "The page at the delivered URL must contain the heading 'Example Domain'.",
-    targetUrl: "https://example.com",
-    expectedExtract: "Example Domain",
+    id: "hello-auspex-correct",
+    text: "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+    targetUrl: `${DEMO}/correct.html`,
+    expectedExtract: "Hello Auspex",
   },
   {
-    id: "example-org-heading",
-    text: "The delivered page must contain the heading 'Example Domain' and a link to more information.",
-    targetUrl: "https://example.org",
-    expectedExtract: "Example Domain",
+    id: "hello-auspex-wrong",
+    text: "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+    targetUrl: `${DEMO}/wrong.html`,
+    expectedExtract: "Hello Auspex",
   },
   {
-    id: "httpbin-moby-dick",
-    text: "The delivered page must contain the heading 'Herman Melville - Moby-Dick'.",
-    targetUrl: "https://httpbin.org/html",
-    expectedExtract: "Herman Melville",
+    id: "welcome-to-auspex",
+    text: "The delivered page must welcome the reader with a 'Hello Auspex' heading.",
+    targetUrl: `${DEMO}/correct.html`,
+    expectedExtract: "Hello Auspex",
   },
 ];
