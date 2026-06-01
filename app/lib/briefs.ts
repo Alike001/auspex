@@ -1,5 +1,6 @@
 import { keccak256, toHex } from "viem";
 import type { Hex } from "viem";
+import { decodeBrief } from "@/lib/auspex";
 
 /**
  * Brief commitment scheme (v1).
@@ -22,6 +23,22 @@ export function buildBriefURI(text: string): string {
 /** keccak256 of the raw UTF-8 brief text — the on-chain `briefHash` commitment. */
 export function hashBrief(text: string): Hex {
   return keccak256(toHex(text));
+}
+
+/**
+ * Resolve a `briefURI` to the brief text. v1 jobs store the brief inline as a
+ * `data:` URI (decoded synchronously); anything else (ipfs/https) is fetched.
+ */
+export async function fetchBriefByURI(briefURI: string): Promise<string> {
+  if (!briefURI) return "Untitled job";
+  if (briefURI.startsWith("data:")) return decodeBrief(briefURI);
+  try {
+    const res = await fetch(briefURI);
+    if (!res.ok) throw new Error(`brief fetch ${res.status}`);
+    return (await res.text()) || "Untitled job";
+  } catch {
+    return decodeBrief(briefURI);
+  }
 }
 
 /** Validate brief length; returns an error message or null if acceptable. */

@@ -62,6 +62,13 @@ export const escrowAbi = [
   },
   {
     type: "function",
+    name: "briefHash",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "bytes32" }],
+  },
+  {
+    type: "function",
     name: "state",
     stateMutability: "view",
     inputs: [],
@@ -94,6 +101,20 @@ export const escrowAbi = [
     stateMutability: "view",
     inputs: [],
     outputs: [{ type: "string" }],
+  },
+  {
+    type: "function",
+    name: "submitDelivery",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "url", type: "string" }],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "claim",
+    stateMutability: "nonpayable",
+    inputs: [],
+    outputs: [],
   },
   {
     type: "event",
