@@ -12,6 +12,7 @@
   "scripts": {
     "lint": "pnpm -r lint",
     "build": "pnpm -r build",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "bots:data-fetcher": "pnpm --filter @auspex/bots data-fetcher"
   }
 }
