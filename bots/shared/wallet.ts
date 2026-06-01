@@ -17,6 +17,11 @@ import { privateKeyToAccount } from "viem/accounts";
 export const RPC_URL =
   process.env.SHANNON_RPC_URL ?? "https://api.infra.testnet.somnia.network";
 
+// The public Shannon RPC occasionally responds slowly; the default 10s timeout
+// (with few retries) let a single slow tx submission abort a whole run. Give it
+// more room so transient slowness self-heals.
+const HTTP_OPTS = { timeout: 30_000, retryCount: 5, retryDelay: 1_000 } as const;
+
 export const somniaShannon = {
   id: 50312,
   name: "Somnia Shannon Testnet",
@@ -35,7 +40,7 @@ export function makeAccount(privateKey: string): Account {
 
 /** Read-only client for balances, receipts, and log queries. */
 export function makePublicClient(): PublicClient {
-  return createPublicClient({ chain: somniaShannon, transport: http(RPC_URL) });
+  return createPublicClient({ chain: somniaShannon, transport: http(RPC_URL, HTTP_OPTS) });
 }
 
 /** Signing client bound to the given private key. */
@@ -43,6 +48,6 @@ export function makeWalletClient(privateKey: string): WalletClient {
   return createWalletClient({
     account: makeAccount(privateKey),
     chain: somniaShannon,
-    transport: http(RPC_URL),
+    transport: http(RPC_URL, HTTP_OPTS),
   });
 }
