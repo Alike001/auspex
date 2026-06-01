@@ -116,8 +116,11 @@ contract AuspexResolver is IAuspexResolver {
             new string[](0),
             "Extract the main visible content focused on headings and primary copy",
             res.deliveryUrl,
-            false,
-            uint8(1)
+            false, // resolveUrl=false → scrape this exact URL (not domain search)
+            uint8(1), // numPages (capped at 1 when resolveUrl is false)
+            uint8(0) // confidenceThreshold=0 → no minimum gate. A broad content
+            // extraction reports lower confidence than a precise factual one, and
+            // the pre-confidenceThreshold agent (Epic 1) accepted it; 0 restores that.
         );
 
         uint256 nextRequestId = platform.createRequest{value: SomniaConstants.DEPOSIT_PER_CALL}(

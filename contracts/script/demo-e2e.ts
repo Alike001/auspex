@@ -106,7 +106,9 @@ async function main() {
   const briefText = "The page at the delivered URL must have an H1 reading 'Hello Auspex'";
   const briefHash = keccak256(toBytes(briefText));
   const briefURI = `data:text/plain;utf-8,${encodeURIComponent(briefText)}`;
-  const lockedAmount = parseEther("0.5");
+  // Must cover resolution (3 × 0.5 STT = 1.5) + the payout. Resolution pulls the
+  // agent budget from the escrow balance, so lock comfortably above 1.5 STT.
+  const lockedAmount = parseEther("2");
   const deadline = BigInt(Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60);
 
   console.log(`⏳ Creating job (locking ${lockedAmount} wei)...`);

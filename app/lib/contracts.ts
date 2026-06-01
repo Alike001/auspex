@@ -5,7 +5,7 @@ import type { Address } from "viem";
  * Source of truth: contracts/deployments/shannon.json
  */
 export const ESCROW_FACTORY_ADDRESS =
-  "0xaB5856136B531270253938C35fc1705FCed44EB9" as Address;
+  "0x00730838086b6f3c7a6d5443a17D021FA714FD93" as Address;
 
 /**
  * Minimal hand-written ABIs — only the fragments the frontend reads.

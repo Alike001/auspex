@@ -3,7 +3,10 @@ pragma solidity ^0.8.24;
 
 // Vendored from Kali-Decoder/Somnia-Agentic-examples/contracts/interfaces/ISomniaAgents.sol
 // Pinned to sdk-snippets.md §1 (Somnia Agentathon 2026).
-// Do not edit — re-vendor if upstream changes.
+// Re-vendored 2026-06-01: Somnia added a trailing `uint8 confidenceThreshold` to
+// IParseWebsiteAgent.ExtractString / ExtractANumber (per docs.somnia.network/agents).
+// The old 7-arg ExtractString selector no longer decodes — that was the cause of
+// every job refunding with "Could not parse delivered page".
 
 enum ConsensusType { Majority, Threshold }
 
@@ -115,7 +118,8 @@ interface IParseWebsiteAgent {
         string calldata prompt,
         string calldata url,
         bool resolveUrl,
-        uint8 numPages
+        uint8 numPages,
+        uint8 confidenceThreshold
     ) external returns (string memory);
 
     function ExtractANumber(
@@ -126,6 +130,7 @@ interface IParseWebsiteAgent {
         string calldata prompt,
         string calldata url,
         bool resolveUrl,
-        uint8 numPages
+        uint8 numPages,
+        uint8 confidenceThreshold
     ) external returns (uint256);
 }
