@@ -3,6 +3,13 @@
  * v1 deliberately avoids a headless browser (Playwright is v2): the briefs in
  * the catalogue target static pages whose content is in the initial HTML.
  */
+import dns from "node:dns";
+
+// Prefer IPv4. On networks with broken IPv6 routing, undici/fetch tries the AAAA
+// record first and hangs until ETIMEDOUT (e.g. example.org timed out while
+// httpbin succeeded). ipv4first makes fetch reach the A record directly.
+dns.setDefaultResultOrder("ipv4first");
+
 export type ScrapeResult = {
   ok: boolean;
   status: number;
@@ -29,8 +36,7 @@ function extractHeading(html: string): string {
   return title ? stripHtml(title[1]) : "";
 }
 
-/** GET the URL with a timeout. Never throws — failures come back as `{ ok: false }`. */
-export async function scrapeUrl(url: string, timeoutMs = 15_000): Promise<ScrapeResult> {
+async function attempt(url: string, timeoutMs: number): Promise<ScrapeResult> {
   try {
     const res = await fetch(url, {
       signal: AbortSignal.timeout(timeoutMs),
@@ -47,12 +53,25 @@ export async function scrapeUrl(url: string, timeoutMs = 15_000): Promise<Scrape
       content: stripHtml(html).slice(0, 2000),
     };
   } catch (err) {
-    return {
-      ok: false,
-      status: 0,
-      heading: "",
-      content: "",
-      error: err instanceof Error ? err.message : String(err),
-    };
+    // undici wraps the real reason in `cause` — surface its code (ETIMEDOUT,
+    // ENOTFOUND, …) so a failed scrape is diagnosable from the log line alone.
+    const code = (err as { cause?: { code?: string } })?.cause?.code;
+    const message = err instanceof Error ? err.message : String(err);
+    return { ok: false, status: 0, heading: "", content: "", error: code ? `${message} (${code})` : message };
   }
+}
+
+/**
+ * GET the URL with a timeout, retrying transient failures. Never throws —
+ * failures come back as `{ ok: false }`. Retries matter because the bots may run
+ * on flaky connections where the same host times out once, then succeeds.
+ */
+export async function scrapeUrl(url: string, timeoutMs = 12_000, retries = 2): Promise<ScrapeResult> {
+  let last: ScrapeResult = { ok: false, status: 0, heading: "", content: "", error: "not attempted" };
+  for (let i = 0; i <= retries; i++) {
+    last = await attempt(url, timeoutMs);
+    if (last.ok) return last;
+    if (i < retries) await new Promise((r) => setTimeout(r, 800 * (i + 1)));
+  }
+  return last;
 }
