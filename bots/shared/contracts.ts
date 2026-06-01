@@ -44,6 +44,7 @@ export const escrowFactoryAbi = [
 export const escrowAbi = [
   { type: "function", name: "state", stateMutability: "view", inputs: [], outputs: [{ type: "uint8" }] },
   { type: "function", name: "verdict", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
+  { type: "function", name: "briefURI", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
   { type: "function", name: "deliveryUrl", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
   { type: "function", name: "reasoning", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },
   { type: "function", name: "client", stateMutability: "view", inputs: [], outputs: [{ type: "address" }] },
