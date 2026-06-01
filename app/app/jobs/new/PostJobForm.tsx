@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ESCROW_FACTORY_ADDRESS, escrowFactoryAbi } from "@/lib/contracts";
+import { isUserRejection } from "@/lib/auspex";
 import { BRIEF_MAX_CHARS, validateBrief } from "@/lib/briefs";
 
 /** Resolution costs 3 × 0.12 STT, pulled from the escrow balance by Escrow.resolve().
@@ -30,20 +31,6 @@ type Errors = Partial<Record<"brief" | "deliverer" | "amount" | "deadline", stri
 /** "0x…ab12" — the short brief-hash shown on success. */
 function shortHash(hash: Hex | null): string {
   return hash ? `0x…${hash.slice(-4)}` : "0x…";
-}
-
-/** viem wraps a wallet rejection; detect it across the cause chain. */
-function isUserRejection(err: unknown): boolean {
-  let e: unknown = err;
-  for (let i = 0; i < 5 && e; i++) {
-    const o = e as { name?: string; code?: number; message?: string; cause?: unknown };
-    if (o.name === "UserRejectedRequestError" || o.code === 4001) return true;
-    if (typeof o.message === "string" && /user rejected|user denied|rejected the request/i.test(o.message)) {
-      return true;
-    }
-    e = o.cause;
-  }
-  return false;
 }
 
 export function PostJobForm() {
