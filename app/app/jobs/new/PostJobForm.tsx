@@ -21,8 +21,8 @@ import { BRIEF_MAX_CHARS, validateBrief } from "@/lib/briefs";
 
 /** Resolution costs 3 × 0.12 STT, pulled from the escrow balance by Escrow.resolve().
  *  We add it on top of the payout so the winner can still claim the full amount. */
-const RESOLUTION_FEE_WEI = parseEther("0.36");
-const RESOLUTION_FEE_LABEL = "0.36 STT (3 × 0.12)";
+const RESOLUTION_FEE_WEI = parseEther("1.5");
+const RESOLUTION_FEE_LABEL = "1.5 STT (3 × 0.5)";
 
 type Phase = "idle" | "submitting" | "mining";
 type Banner = { kind: "error" | "success"; message: string };
@@ -109,7 +109,7 @@ export function PostJobForm() {
     } else if (balance) {
       const needed = parseEther(amount) + RESOLUTION_FEE_WEI;
       if (needed > balance.value) {
-        next.amount = "Amount + 0.36 STT resolution exceeds your balance";
+        next.amount = "Amount + 1.5 STT resolution exceeds your balance";
       }
     }
 
@@ -282,7 +282,7 @@ export function PostJobForm() {
           {" · "}
           Resolution budget: {RESOLUTION_FEE_LABEL}
           <p className="mt-1 text-xs text-text-muted">
-            Your wallet sends {(Number(lockedDisplay) + 0.36).toFixed(2)} STT in total
+            Your wallet sends {(Number(lockedDisplay) + 1.5).toFixed(2)} STT in total
             {balance ? ` · balance ${Number(formatEther(balance.value)).toFixed(2)} ${balance.symbol}` : ""}.
           </p>
         </div>

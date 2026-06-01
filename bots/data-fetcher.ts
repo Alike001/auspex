@@ -25,11 +25,11 @@ import { makeAccount, makePublicClient, makeWalletClient } from "./shared/wallet
 dotenv.config();
 dotenv.config({ path: ".env.local", override: true });
 
-/** Locked amounts (STT) the bot rotates through. All are within the 0.3–0.5
- *  spec range AND ≥ the 0.36 resolution budget resolve() pulls from the escrow,
- *  so the downstream resolve() in later stories never reverts InsufficientBalance. */
-const AMOUNTS_STT = ["0.4", "0.45", "0.5"] as const;
-const MIN_BALANCE_WEI = parseEther("1");
+/** Locked amounts (STT) the bot rotates through. All exceed the resolution budget
+ *  resolve() pulls from the escrow (3 × 0.5 = 1.5 STT) so resolve() never reverts
+ *  InsufficientBalance, with the remainder as the deliverer's payout. */
+const AMOUNTS_STT = ["1.8", "2.0", "2.2"] as const;
+const MIN_BALANCE_WEI = parseEther("2.5");
 /** A throwaway key used ONLY in --dry-run when real keys are absent, so wiring
  *  (address derivation, hashing, amount) can be checked with no secrets / no CI key. */
 const DRY_RUN_DUMMY_KEY = `0x${"11".repeat(32)}` as Hex;
@@ -101,7 +101,7 @@ async function main(): Promise<void> {
   if (!args.dryRun) {
     const balance = await publicClient.getBalance({ address: fetcherAddress });
     if (balance < MIN_BALANCE_WEI) {
-      console.error("Insufficient balance: need ≥ 1 STT");
+      console.error("Insufficient balance: need ≥ 2.5 STT");
       process.exit(2);
     }
   }
