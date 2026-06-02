@@ -5,6 +5,8 @@
   import { DeliveryPreview } from "@/components/DeliveryPreview";
   import { ReasoningTrace } from "@/components/ReasoningTrace";
   import type { Step } from "@/components/ReasoningTrace.types";
+  import { TraceTimeline } from "@/components/TraceTimeline";
+  import type { TraceNode } from "@/components/TraceTimeline.types";
 
 
   const STATUSES: Status[] = ["open", "judging", "released", "refunded", "claimed"];
@@ -33,6 +35,33 @@
     { status: "success", label: "JSON API verified URL", detail: "200 OK" },
     { status: "success", label: "Parsed page content", tone: "info" },
     { status: "success", label: "Verdict: refunded", detail: "Delivery does not satisfy the brief", tone: "danger", txHash: "0xdead000000beef21" },
+  ];
+
+  // TraceTimeline pipelines — collectively exercise every (step, status) fill rule.
+  const TL_JUDGING: TraceNode[] = [
+    { step: "json-api", status: "success" },
+    { step: "parse-website", status: "success" },
+    { step: "llm-judge", status: "inProgress" },
+  ];
+  const TL_RELEASED: TraceNode[] = [
+    { step: "json-api", status: "success" },
+    { step: "parse-website", status: "success" },
+    { step: "llm-judge", status: "success" }, // success on llm-judge → bg-accent, not bg-success
+  ];
+  const TL_PARSING: TraceNode[] = [
+    { step: "json-api", status: "success" },
+    { step: "parse-website", status: "inProgress" },
+    { step: "llm-judge", status: "pending" },
+  ];
+  const TL_ERROR: TraceNode[] = [
+    { step: "json-api", status: "success" },
+    { step: "parse-website", status: "error" },
+    { step: "llm-judge", status: "pending" },
+  ];
+  const TL_IDLE: TraceNode[] = [
+    { step: "json-api", status: "pending" },
+    { step: "parse-website", status: "pending" },
+    { step: "llm-judge", status: "pending" },
   ];
 
 
@@ -134,6 +163,23 @@
             <div className="rounded-lg border border-border bg-surface p-5">
               <ReasoningTrace steps={[]} />
             </div>
+          </div>
+        </Section>
+
+        <Section title="TraceTimeline">
+          <div className="grid gap-6 sm:grid-cols-2">
+            {([
+              ["Judging (llm-judge in progress)", TL_JUDGING],
+              ["Released (llm-judge success → accent)", TL_RELEASED],
+              ["Parsing (parse-website in progress)", TL_PARSING],
+              ["Error (parse-website failed)", TL_ERROR],
+              ["Idle (all pending)", TL_IDLE],
+            ] as const).map(([label, steps]) => (
+              <div key={label} className="rounded-lg border border-border bg-surface p-5">
+                <p className="mb-4 text-[11px] uppercase tracking-[0.04em] text-text-muted">{label}</p>
+                <TraceTimeline steps={steps} />
+              </div>
+            ))}
           </div>
         </Section>
 
