@@ -7,6 +7,8 @@
   import type { Step } from "@/components/ReasoningTrace.types";
   import { TraceTimeline } from "@/components/TraceTimeline";
   import type { TraceNode } from "@/components/TraceTimeline.types";
+  import { BotFeedRow } from "@/components/BotFeedRow";
+  import type { BotFeedRowProps } from "@/components/BotFeedRow.types";
 
 
   const STATUSES: Status[] = ["open", "judging", "released", "refunded", "claimed"];
@@ -62,6 +64,14 @@
     { step: "json-api", status: "pending" },
     { step: "parse-website", status: "pending" },
     { step: "llm-judge", status: "pending" },
+  ];
+
+  const FEED_ROWS: BotFeedRowProps[] = [
+    { fromBot: PARTY_A.address, toBot: PARTY_B.address, briefExcerpt: "H1 must read 'Hello Auspex'", status: "claimed", durationMs: 2600, txHash: "0xabc123def456ff21", amount: "2.0" },
+    { fromBot: PARTY_A.address, toBot: PARTY_B.address, briefExcerpt: "Welcome the reader with a 'Hello Auspex' heading", status: "released", durationMs: 3100, txHash: "0xfeed00112233aa44", amount: "2.2" },
+    { fromBot: PARTY_B.address, toBot: PARTY_A.address, briefExcerpt: "Page heading does not match the brief", status: "refunded", durationMs: 2400, txHash: "0xdead000000beef21", amount: "1.8" },
+    { fromBot: PARTY_A.address, toBot: PARTY_B.address, briefExcerpt: "H1 must read 'Hello Auspex'", status: "judging", durationMs: 1200, amount: "2.0" },
+    { fromBot: PARTY_A.address, toBot: PARTY_B.address, briefExcerpt: "Awaiting delivery from freelancer bot", status: "open", durationMs: 0, amount: "1.8" },
   ];
 
 
@@ -179,6 +189,14 @@
                 <p className="mb-4 text-[11px] uppercase tracking-[0.04em] text-text-muted">{label}</p>
                 <TraceTimeline steps={steps} />
               </div>
+            ))}
+          </div>
+        </Section>
+
+        <Section title="BotFeedRow">
+          <div className="divide-y divide-border rounded-lg border border-border bg-surface p-2">
+            {FEED_ROWS.map((row, i) => (
+              <BotFeedRow key={`${row.txHash ?? "pending"}-${i}`} {...row} />
             ))}
           </div>
         </Section>
