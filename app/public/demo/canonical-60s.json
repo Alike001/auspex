@@ -1,0 +1,662 @@
+[
+  {
+    "atMs": 0,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x8637D422cA5c078c61cdF9f1235c531c5b678309",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "2",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 600,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x8637D422cA5c078c61cdF9f1235c531c5b678309",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 1200,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x8637D422cA5c078c61cdF9f1235c531c5b678309",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 1800,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x8637D422cA5c078c61cdF9f1235c531c5b678309",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 2600,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x8637D422cA5c078c61cdF9f1235c531c5b678309",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0x5bbdbd05ab199bb8808541b4a168875e084bae9cc0ccd62a3429440ad319c0fc"
+    }
+  },
+  {
+    "atMs": 3200,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x8637D422cA5c078c61cdF9f1235c531c5b678309",
+      "txHash": "0x30dbe39ae54015dc2d975595b252a318a6008f41984a880670ba99c94bd718f1"
+    }
+  },
+  {
+    "atMs": 4833,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0xbC03F76A3aC56815932a1307793AC2Fa0CFDBeca",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "1.8",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 5433,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xbC03F76A3aC56815932a1307793AC2Fa0CFDBeca",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 6033,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xbC03F76A3aC56815932a1307793AC2Fa0CFDBeca",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 6633,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xbC03F76A3aC56815932a1307793AC2Fa0CFDBeca",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 7433,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0xbC03F76A3aC56815932a1307793AC2Fa0CFDBeca",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0x4a0f75e15404e59910b7320d40cdbd5a31198f7a15064fa284e87eb2da749b12"
+    }
+  },
+  {
+    "atMs": 8033,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0xbC03F76A3aC56815932a1307793AC2Fa0CFDBeca",
+      "txHash": "0x3b0cc9959b3d209b7bb796cf3b8f31c88643d12a04439a669f7dfb0f9ecb0c73"
+    }
+  },
+  {
+    "atMs": 9667,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x9d454398cE6975152E77972EC732430Ec6c6417e",
+      "brief": "The delivered page must welcome the reader with a 'Hello Auspex' heading.",
+      "amount": "2.2",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 10267,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x9d454398cE6975152E77972EC732430Ec6c6417e",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 10867,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x9d454398cE6975152E77972EC732430Ec6c6417e",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 11467,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x9d454398cE6975152E77972EC732430Ec6c6417e",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 12267,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x9d454398cE6975152E77972EC732430Ec6c6417e",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0xd295fc66227d1da0e3faee8bb9ba029725122e955f659f2339433dfba2bb4342"
+    }
+  },
+  {
+    "atMs": 12867,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x9d454398cE6975152E77972EC732430Ec6c6417e",
+      "txHash": "0x29f298c0f936660110bed3d926421245dd1d399e9f90f47e181372a0f74e89cc"
+    }
+  },
+  {
+    "atMs": 14500,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0xdDE19B25Cf972B1CABf159c6E6a72Bce1a51B973",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "2",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 15100,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xdDE19B25Cf972B1CABf159c6E6a72Bce1a51B973",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 15700,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xdDE19B25Cf972B1CABf159c6E6a72Bce1a51B973",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 16300,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xdDE19B25Cf972B1CABf159c6E6a72Bce1a51B973",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 17100,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0xdDE19B25Cf972B1CABf159c6E6a72Bce1a51B973",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0x97044577441300397c4f17e821d71c1d125f4f2fa0ee87e5a8426d9a225285d4"
+    }
+  },
+  {
+    "atMs": 17700,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0xdDE19B25Cf972B1CABf159c6E6a72Bce1a51B973",
+      "txHash": "0x92e7f24d5643b1dd330f6479e51bd55a104ee8951d48a19953450a690b0b0212"
+    }
+  },
+  {
+    "atMs": 19333,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x8623296A720C6F76dA77F63Da82FDEa9FB150D77",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "1.8",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 19933,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x8623296A720C6F76dA77F63Da82FDEa9FB150D77",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 20533,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x8623296A720C6F76dA77F63Da82FDEa9FB150D77",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 21133,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x8623296A720C6F76dA77F63Da82FDEa9FB150D77",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 21933,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x8623296A720C6F76dA77F63Da82FDEa9FB150D77",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0xc075ca64c40a45e460b94bd9034db6c17223579032fb56dc88734ad098988273"
+    }
+  },
+  {
+    "atMs": 22533,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x8623296A720C6F76dA77F63Da82FDEa9FB150D77",
+      "txHash": "0x5dd5eeb930d1271508d4bfae586ecddef48b8d62e2c9620e44f6f285dff1d8bb"
+    }
+  },
+  {
+    "atMs": 24167,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x6dE4010AFE173F0e1242773B6f7e6F87b6A2e7fb",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "2",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 24767,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x6dE4010AFE173F0e1242773B6f7e6F87b6A2e7fb",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 25367,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x6dE4010AFE173F0e1242773B6f7e6F87b6A2e7fb",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 25967,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x6dE4010AFE173F0e1242773B6f7e6F87b6A2e7fb",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 26767,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x6dE4010AFE173F0e1242773B6f7e6F87b6A2e7fb",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0x66d45d905c163af916b11c2105785d4abb15ce6991bd95effc9e369543fed88b"
+    }
+  },
+  {
+    "atMs": 27367,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x6dE4010AFE173F0e1242773B6f7e6F87b6A2e7fb",
+      "txHash": "0x8deeb878745dfa12ee234971d50c35025edbf1b7b5d0ab3f3b8565977243aa9f"
+    }
+  },
+  {
+    "atMs": 29000,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x0808d6B1ef4114F1dfb5c4337f187e80160413e6",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "2",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 29600,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x0808d6B1ef4114F1dfb5c4337f187e80160413e6",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 30200,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x0808d6B1ef4114F1dfb5c4337f187e80160413e6",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 30800,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x0808d6B1ef4114F1dfb5c4337f187e80160413e6",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 31600,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x0808d6B1ef4114F1dfb5c4337f187e80160413e6",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0xd3d94e95877b0e4eca0f4ad3b8d790e61d3313e8e7e02e604761ca91848c3e6f"
+    }
+  },
+  {
+    "atMs": 32200,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x0808d6B1ef4114F1dfb5c4337f187e80160413e6",
+      "txHash": "0x226b28ce86d242732d10d714ffc2d9740f0039b51c14bfd8dd7cd5401ec564ae"
+    }
+  },
+  {
+    "atMs": 33833,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x3528Ac3229A34ad1Cb1643A1c1cBaA09eb0498A7",
+      "brief": "The delivered page must welcome the reader with a 'Hello Auspex' heading.",
+      "amount": "2.2",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 34433,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x3528Ac3229A34ad1Cb1643A1c1cBaA09eb0498A7",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 35033,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x3528Ac3229A34ad1Cb1643A1c1cBaA09eb0498A7",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 35633,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x3528Ac3229A34ad1Cb1643A1c1cBaA09eb0498A7",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 36433,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x3528Ac3229A34ad1Cb1643A1c1cBaA09eb0498A7",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0x94b5a3bc704910d50c32b87257f664361ce8d74da6cf142eec10513a4a989371"
+    }
+  },
+  {
+    "atMs": 37033,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x3528Ac3229A34ad1Cb1643A1c1cBaA09eb0498A7",
+      "txHash": "0x009f6e6c59d5b1e14d18d73ae71e111b82239f7cd2819cdcff239253ff4e8a79"
+    }
+  },
+  {
+    "atMs": 38667,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x2eB80E54fFf934C5734bC9D40d57cdc1F9f37BA3",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "1.8",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 39267,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x2eB80E54fFf934C5734bC9D40d57cdc1F9f37BA3",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 39867,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x2eB80E54fFf934C5734bC9D40d57cdc1F9f37BA3",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 40467,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x2eB80E54fFf934C5734bC9D40d57cdc1F9f37BA3",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 41267,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x2eB80E54fFf934C5734bC9D40d57cdc1F9f37BA3",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0xf81bd86c54137f2827266e0d58b4213ed83767531df6052d24ed1c8222df10df"
+    }
+  },
+  {
+    "atMs": 41867,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x2eB80E54fFf934C5734bC9D40d57cdc1F9f37BA3",
+      "txHash": "0x1e8b40afee4ab56861d9a471356bfd1af3c13362a21cd0d3897efeccfbfeb7c0"
+    }
+  },
+  {
+    "atMs": 43500,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x0A1284Ef597E54DF2F737B96a273AAcDFAe74bB3",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "1.8",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 44100,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x0A1284Ef597E54DF2F737B96a273AAcDFAe74bB3",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 44700,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x0A1284Ef597E54DF2F737B96a273AAcDFAe74bB3",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 45300,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x0A1284Ef597E54DF2F737B96a273AAcDFAe74bB3",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 46100,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x0A1284Ef597E54DF2F737B96a273AAcDFAe74bB3",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0x4989c84b60e8b4be59151a829d0b06ab5a7dd4fe3be1083c577b31157b27b852"
+    }
+  },
+  {
+    "atMs": 46700,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x0A1284Ef597E54DF2F737B96a273AAcDFAe74bB3",
+      "txHash": "0xff154d1670bec37c9bc2c9ef8249ce8de584b00176b451c82ae017091f7e8618"
+    }
+  },
+  {
+    "atMs": 48333,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0x372B6eE5be29F83067799A9E39BB04e37A9e4098",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "1.8",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 48933,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x372B6eE5be29F83067799A9E39BB04e37A9e4098",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 49533,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x372B6eE5be29F83067799A9E39BB04e37A9e4098",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 50133,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0x372B6eE5be29F83067799A9E39BB04e37A9e4098",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 50933,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0x372B6eE5be29F83067799A9E39BB04e37A9e4098",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0x040f9e640875eb786adeb37acd12b02f6b7be67d8311abbc1f6a0cec8972a977"
+    }
+  },
+  {
+    "atMs": 51533,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0x372B6eE5be29F83067799A9E39BB04e37A9e4098",
+      "txHash": "0xc2190dfa172a1f8e34fa260de1ba6a5aeb5a2c40fe7a79cc83efb9e6e4bebb8f"
+    }
+  },
+  {
+    "atMs": 53167,
+    "type": "JobCreated",
+    "payload": {
+      "escrow": "0xe7241b7ee59A38e9DA385f86ACC868B8a5C3c843",
+      "brief": "The delivered page's main heading (H1) must read 'Hello Auspex'.",
+      "amount": "2",
+      "deliverer": "0xdE67A35B322e5A31e8215B5245CA4e48d7977F71"
+    }
+  },
+  {
+    "atMs": 53767,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xe7241b7ee59A38e9DA385f86ACC868B8a5C3c843",
+      "step": "json-api",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 54367,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xe7241b7ee59A38e9DA385f86ACC868B8a5C3c843",
+      "step": "parse-website",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 54967,
+    "type": "AgentStep",
+    "payload": {
+      "escrow": "0xe7241b7ee59A38e9DA385f86ACC868B8a5C3c843",
+      "step": "llm-judge",
+      "status": "success"
+    }
+  },
+  {
+    "atMs": 55767,
+    "type": "JobResolved",
+    "payload": {
+      "escrow": "0xe7241b7ee59A38e9DA385f86ACC868B8a5C3c843",
+      "verdict": "released",
+      "reasoning": "Verdict: released · Evidence: <h1>Hello Auspex</h1>\n<title>Auspex Demo - Happy Path</title>",
+      "txHash": "0x184358d80f8ff9c78ee35e4b39b41659fae62a785d02f6d49a9f73f8bd1d7ee6"
+    }
+  },
+  {
+    "atMs": 56367,
+    "type": "PayoutClaimed",
+    "payload": {
+      "escrow": "0xe7241b7ee59A38e9DA385f86ACC868B8a5C3c843",
+      "txHash": "0x44a119822d265d23ab9f210d08b440026844d8e7f06c89092e3e05d3f22e61c2"
+    }
+  }
+]

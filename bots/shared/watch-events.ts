@@ -1,14 +1,17 @@
 /**
- * Shannon event subscriptions over WebSocket (the `somnia_watch` surface), via
- * viem's watchContractEvent. Two helpers:
- *   - watchJobCreated: long-lived subscription to the factory's JobCreated
+ * Shannon event helpers. Both POLL over HTTP rather than subscribing over
+ * WebSocket: Shannon's WS event delivery is flaky — a watchContractEvent
+ * subscription silently dropped a real JobResolved during testing, and a real
+ * JobCreated during a 12-job recording (the socket closed mid-run and the
+ * subscription, unlike a getLogs poll, does NOT backfill events missed while
+ * disconnected, so the scraper never saw that job and the run hung). Polling a
+ * [fromBlock, latest] range is slower but catches every event.
+ *   - watchJobCreated: long-lived poll of the factory's JobCreated
  *   - awaitJobResolved: one-shot wait for a specific escrow's JobResolved
  */
-import { createPublicClient, decodeEventLog, webSocket, type Address, type Hex } from "viem";
-import { somniaShannon, makePublicClient } from "./wallet.js";
+import { type Address, type Hex } from "viem";
+import { makePublicClient } from "./wallet.js";
 import { ESCROW_FACTORY_ADDRESS, escrowFactoryAbi, escrowAbi } from "./contracts.js";
-
-const WS_URL = process.env.SHANNON_WS_URL ?? "wss://api.infra.testnet.somnia.network/ws";
 
 export type JobCreatedEvent = {
   escrow: Address;
@@ -18,32 +21,53 @@ export type JobCreatedEvent = {
   briefHash: Hex;
 };
 
-/** Subscribe to JobCreated on the factory. Returns an unsubscribe function. */
+/**
+ * Poll the factory for JobCreated logs. Returns a stop function.
+ *
+ * We start the cursor at the current head (we only care about jobs posted from
+ * now on) and advance it past every range we've scanned, so a job posted while
+ * we're sleeping between polls is picked up on the next poll instead of lost.
+ */
 export function watchJobCreated(
   onJob: (job: JobCreatedEvent) => void,
   onError?: (err: Error) => void,
+  pollMs = 3_000,
 ): () => void {
-  const client = createPublicClient({ chain: somniaShannon, transport: webSocket(WS_URL) });
-  return client.watchContractEvent({
-    address: ESCROW_FACTORY_ADDRESS,
-    abi: escrowFactoryAbi,
-    eventName: "JobCreated",
-    onLogs: (logs) => {
-      for (const log of logs) {
-        try {
-          const decoded = decodeEventLog({
+  const client = makePublicClient();
+  let stopped = false;
+  let fromBlock: bigint | undefined;
+
+  void (async () => {
+    while (!stopped) {
+      try {
+        const latest = await client.getBlockNumber();
+        if (fromBlock === undefined) fromBlock = latest; // first tick: start at head
+        if (latest >= fromBlock) {
+          const logs = await client.getContractEvents({
+            address: ESCROW_FACTORY_ADDRESS,
             abi: escrowFactoryAbi,
-            data: log.data,
-            topics: log.topics,
-          }) as unknown as { eventName: string; args: JobCreatedEvent };
-          if (decoded.eventName === "JobCreated") onJob(decoded.args);
-        } catch {
-          // unrelated log — ignore
+            eventName: "JobCreated",
+            fromBlock,
+            toBlock: latest,
+          });
+          for (const lg of logs) {
+            const a = lg.args as Partial<JobCreatedEvent>;
+            if (a.escrow && a.client && a.deliverer && a.amount !== undefined && a.briefHash) {
+              onJob({ escrow: a.escrow, client: a.client, deliverer: a.deliverer, amount: a.amount, briefHash: a.briefHash });
+            }
+          }
+          fromBlock = latest + 1n;
         }
+      } catch (err) {
+        onError?.(err instanceof Error ? err : new Error(String(err)));
       }
-    },
-    onError: (err) => onError?.(err),
-  });
+      await new Promise((r) => setTimeout(r, pollMs));
+    }
+  })();
+
+  return () => {
+    stopped = true;
+  };
 }
 
 /**
