@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Auspex — Agent-arbitrated escrow on Somnia</title>
+<style>
+  :root {
+    --bg: #050507; --surface: #0a0a0f; --surface-hi: #0d0d13;
+    --border: #1a1a22; --border-strong: #2a2a35;
+    --accent: #8b5cf6; --accent-light: #a78bfa;
+    --success: #34d399; --warning: #fbbf24;
+    --t1: #e4e4e7; --t2: #a1a1aa; --t3: #71717a;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--bg); color: var(--t1); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  .deck { height: 100%; overflow: hidden; }
+  .slide {
+    position: absolute; inset: 0; display: none;
+    flex-direction: column; justify-content: center;
+    padding: 8vh 10vw; opacity: 0; transition: opacity .25s ease;
+  }
+  .slide.active { display: flex; opacity: 1; }
+  .grid-bg {
+    position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse at top, rgba(0,0,0,.7), transparent 70%);
+    mask-image: radial-gradient(ellipse at top, rgba(0,0,0,.7), transparent 70%);
+  }
+  .slide > * { position: relative; z-index: 1; }
+  .kicker { font-size: .8rem; letter-spacing: .16em; text-transform: uppercase; color: var(--t3); margin-bottom: 1.4rem; }
+  .kicker b { color: var(--accent-light); font-weight: 600; }
+  h1 { font-size: clamp(2.4rem, 6vw, 4.6rem); line-height: 1.02; letter-spacing: -.02em; font-weight: 800; }
+  h2 { font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.08; letter-spacing: -.015em; font-weight: 700; margin-bottom: 1.6rem; }
+  .grad { background: linear-gradient(180deg, var(--accent-light), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  p.lead { font-size: clamp(1.1rem, 2vw, 1.5rem); color: var(--t2); max-width: 46ch; line-height: 1.5; margin-top: 1.4rem; }
+  ul { list-style: none; display: flex; flex-direction: column; gap: 1rem; margin-top: .5rem; }
+  li { font-size: clamp(1rem, 1.8vw, 1.35rem); color: var(--t1); display: flex; gap: .8rem; align-items: baseline; line-height: 1.4; }
+  li b { color: var(--accent-light); font-weight: 600; }
+  li .dot { color: var(--accent); }
+  .badge { display: inline-flex; align-items: center; gap: .5rem; align-self: flex-start; padding: .4rem .8rem; border: 1px solid var(--border-strong); border-radius: 999px; font-size: .8rem; color: var(--t2); margin-bottom: 1.8rem; }
+  .badge .live { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+  .logo { display: inline-flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, var(--accent-light), var(--accent)); font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 2rem; }
+  .pipe { display: flex; align-items: center; gap: 0; margin-top: 2.4rem; flex-wrap: wrap; }
+  .node { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+  .node .ball { width: 26px; height: 26px; border-radius: 50%; }
+  .node .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--t3); }
+  .conn { width: 60px; height: 1px; background: var(--border-strong); margin: 0 .4rem 1.5rem; }
+  .b-json { background: var(--success); } .b-parse { background: var(--success); } .b-llm { background: var(--accent); }
+  .stat-row { display: flex; gap: 3rem; margin-top: 2.4rem; flex-wrap: wrap; }
+  .stat .n { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800; color: var(--accent-light); }
+  .stat .l { font-size: .9rem; color: var(--t3); margin-top: .3rem; }
+  code, .mono { font-family: var(--mono); font-size: .82em; color: var(--t2); }
+  a { color: var(--accent-light); text-decoration: none; }
+  .footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-between; padding: 1rem 2rem; font-size: .75rem; color: var(--t3); z-index: 5; }
+  .progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--accent); z-index: 6; transition: width .25s ease; }
+  .hint { color: var(--t3); }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 — Title -->
+  <section class="slide active">
+    <div class="grid-bg"></div>
+    <div class="logo">A</div>
+    <div class="kicker"><b>Somnia Shannon</b> · Agentathon 2026</div>
+    <h1>Agent-arbitrated <span class="grad">escrow</span>, on-chain.</h1>
+    <p class="lead">Lock funds against a brief, deliver a URL — three on-chain Somnia agents judge the work and settle in one block.</p>
+  </section>
+
+  <!-- 2 — Problem -->
+  <section class="slide">
+    <div class="kicker">The problem</div>
+    <h2>Escrow needs an arbiter.<br/>For agents, there is none.</h2>
+    <p class="lead">Human dispute resolution is slow and expensive — and it doesn't exist at all for the thing coming next: autonomous agents paying each other for work, with no human in the loop to judge the delivery.</p>
+  </section>
+
+  <!-- 3 — Solution -->
+  <section class="slide">
+    <div class="kicker">The solution</div>
+    <h2>The arbiter is <span class="grad">on-chain AI</span>.</h2>
+    <ul>
+      <li><span class="dot">→</span><span>Client locks STT against a plain-text brief, names a deliverer.</span></li>
+      <li><span class="dot">→</span><span>Deliverer submits a URL on-chain.</span></li>
+      <li><span class="dot">→</span><span>Three composed Somnia agents judge it; escrow <b>releases or refunds in the same block</b>, reasoning emitted on-chain.</span></li>
+    </ul>
+  </section>
+
+  <!-- 4 — The moat / how it works -->
+  <section class="slide">
+    <div class="kicker">The moat — validator-consensus AI inside an EVM contract</div>
+    <h2>One composed agent call</h2>
+    <p class="lead">Not an LLM API from a backend — the verdict is produced by Somnia's on-chain agent platform, attested by validators.</p>
+    <div class="pipe">
+      <div class="node"><div class="ball b-json"></div><div class="lbl">json-api</div></div>
+      <div class="conn"></div>
+      <div class="node"><div class="ball b-parse"></div><div class="lbl">parse-website</div></div>
+      <div class="conn"></div>
+      <div class="node"><div class="ball b-llm"></div><div class="lbl">llm-judge</div></div>
+    </div>
+  </section>
+
+  <!-- 5 — Demo -->
+  <section class="slide">
+    <div class="badge"><span class="live"></span> Live on Somnia Shannon</div>
+    <div class="kicker">Demo</div>
+    <h2>Two surfaces, one protocol</h2>
+    <ul>
+      <li><span class="dot">→</span><span><b>/jobs</b> — post a job, watch the agents judge it, claim the payout.</span></li>
+      <li><span class="dot">→</span><span><b>/bots</b> — autonomous agent-to-agent commerce: a 12-job run, all released, replayed live.</span></li>
+    </ul>
+    <p class="lead"><a href="https://auspex-app.vercel.app">auspex-app.vercel.app</a></p>
+  </section>
+
+  <!-- 6 — Proof / traction -->
+  <section class="slide">
+    <div class="kicker">Proof</div>
+    <h2>Real, verified, end-to-end</h2>
+    <div class="stat-row">
+      <div class="stat"><div class="n">37/37</div><div class="l">Forge tests passing</div></div>
+      <div class="stat"><div class="n">1 block</div><div class="l">post → judge → settle</div></div>
+      <div class="stat"><div class="n">2</div><div class="l">contracts verified on Blockscout</div></div>
+    </div>
+    <p class="lead mono">EscrowFactory 0x0073…FD93 · AuspexResolver 0x4BE0…Dbeda</p>
+  </section>
+
+  <!-- 7 — Roadmap / ask -->
+  <section class="slide">
+    <div class="grid-bg"></div>
+    <div class="kicker">What's next</div>
+    <h2>From one vertical to a primitive</h2>
+    <ul>
+      <li><span class="dot">→</span><span>More brief types — code review, data labeling, file deliverables.</span></li>
+      <li><span class="dot">→</span><span>On-chain reputation agents can read before transacting.</span></li>
+      <li><span class="dot">→</span><span>Dispute-stake escalation to a larger agent panel.</span></li>
+    </ul>
+    <p class="lead">Built by <b>Hammed Ali Oyeleye</b> · <a href="https://github.com/Alike001/auspex">github.com/Alike001/auspex</a></p>
+  </section>
+
+</div>
+
+<div class="footer">
+  <span>Auspex · Agent-arbitrated escrow on Somnia</span>
+  <span class="hint">← → to navigate · <span id="counter">1 / 7</span></span>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let i = 0;
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    progress.style.width = ((i + 1) / slides.length * 100) + '%';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(i + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(i - 1); }
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(slides.length - 1);
+  });
+  document.addEventListener('click', () => show(i + 1));
+  show(0);
+</script>
+</body>
+</html>
