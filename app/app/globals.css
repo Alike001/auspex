@@ -19,6 +19,7 @@
     --color-info: #60a5fa;
     --animate-judging: judging-pulse 1.2s ease-in-out infinite;
     --animate-trace-in: trace-in 240ms ease-out both;
+    --animate-feed-in: feed-row-in 200ms ease-out both;
 
 
 
@@ -39,6 +40,11 @@
 
    @keyframes trace-in {
     from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes feed-row-in {
+    from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
