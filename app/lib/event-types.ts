@@ -53,11 +53,25 @@ export type PayoutClaimedEvent = {
   txHash: string;
 };
 
+/**
+ * System events — NOT on-chain happenings. Only the live watcher (lib/watch.ts)
+ * emits these so the dashboard can show connection health; playback never does.
+ * Consumers switch on `type` and ignore the ones they don't render.
+ */
+
+/** A poll/connection cycle failed — the UI can surface a "degraded" banner. */
+export type ConnectionDegradedEvent = { type: "ConnectionDegraded" };
+
+/** A successful poll observed a new chain head — a liveness heartbeat. */
+export type BlockTickEvent = { type: "BlockTick"; blockNumber: number };
+
 export type AuspexEvent =
   | JobCreatedEvent
   | AgentStepEvent
   | JobResolvedEvent
-  | PayoutClaimedEvent;
+  | PayoutClaimedEvent
+  | ConnectionDegradedEvent
+  | BlockTickEvent;
 
 /** A recorded frame: an AuspexEvent tagged with its playback offset (ms). */
 export type RecordingFrame = {
