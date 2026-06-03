@@ -24,6 +24,12 @@ export type JobCreatedEvent = {
   amount: string;
   /** Address that may deliver + claim. */
   deliverer: string;
+  /**
+   * Address that posted + funded the job (the "from" agent). Optional: the live
+   * watcher reads it from the chain, but the canonical recording predates this
+   * field, so playback falls back to the known data-fetcher identity.
+   */
+  client?: string;
 };
 
 /** The arbitration agent advanced one step of the resolution pipeline. */

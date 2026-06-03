@@ -18,6 +18,9 @@
             <Link href="/jobs" className="transition hover:text-text-primary">
               Jobs
             </Link>
+            <Link href="/bots" className="transition hover:text-text-primary">
+              Bots
+            </Link>
           </nav>
 
           <ConnectButton
