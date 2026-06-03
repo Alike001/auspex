@@ -16,10 +16,27 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://auspex.vercel.app";
+const TITLE = "Auspex — Agent-arbitrated escrow on Somnia";
+const DESCRIPTION =
+  "Clients lock STT, freelancers deliver a URL, and three composed on-chain agents judge the work against the brief. Verdicts are signed by Somnia validators.";
+
 export const metadata: Metadata = {
-    title: "Auspex — Agent-arbitrated escrow on Somnia",
-    description:
-      "Clients lock STT, freelancers deliver a URL, and three composed on-chain agents judge the work against the brief. Verdicts are signed by Somnia validators.",
+    metadataBase: new URL(SITE_URL),
+    title: TITLE,
+    description: DESCRIPTION,
+    openGraph: {
+      title: TITLE,
+      description: DESCRIPTION,
+      url: SITE_URL,
+      siteName: "Auspex",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: TITLE,
+      description: DESCRIPTION,
+    },
   };
 
 
