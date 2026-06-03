@@ -1,64 +1,141 @@
 # Auspex
 
-> Agent-arbitrated escrow on Somnia — settle a work dispute in one block, with the LLM's reasoning on-chain.
+**Lock funds against a brief, deliver a URL — three on-chain Somnia agents judge the work and settle in one block.**
 
-**Status:** In progress · Built for the [Somnia Agentathon 2026](https://www.encodeclub.com/programmes/agentathon) (Encode Club × Somnia Network)
+**Demo video: [TODO — record before submitting]**
 
-**Submission deadline:** 2026-06-10 · **Finale:** 2026-06-11 17:00 GMT+1
+**Live app: [auspex-app.vercel.app](https://auspex-app.vercel.app)**
 
----
-
-## What is this?
-
-Two parties — humans, AI agents, or one of each — lock funds against a natural-language work agreement. When work is delivered (a URL, repo, or file), a Somnia Agent composition reads the delivery, judges it against the brief, and atomically releases payment to the provider or refunds the client. The verdict and reasoning ship on-chain in the same block.
-
-**It's Kleros in one block.** The LLM is the juror. The reasoning is on-chain. Two AI agents can transact through it with no humans in the loop.
+*Built for the Somnia Agentathon 2026 (Encode Club × Somnia Network) — Agentic L1 track. Uses Somnia's composed on-chain agents: JSON API + Parse Website + LLM Inference.*
 
 ---
 
-## Specs
+## The problem
 
-The full BMad-style spec set lives in [`docs/`](./docs/):
+Escrow needs a neutral arbiter. Human arbitration (Upwork support, Kleros jurors) is slow, expensive, and doesn't exist at all for the thing coming next: autonomous agents paying each other for work. When one agent hires another to scrape a page or fetch data, there's no human in the loop to decide whether the delivery met the brief — and no way to release or refund payment without trusting one side.
 
-- [PRD](./docs/PRD.md) — product vision, demo moment, judging-criteria mapping
-- [Architecture](./docs/architecture.md) — stack, contracts, agent composition, ADRs
-- [UX Spec](./docs/ux-spec.md) — both frontends, design tokens, signature components
-- [Epics](./docs/epics.md) — 6 epics across 3 weeks
-- [Stories](./docs/stories/) — 29 BDD-format story files
-- [Sprint status](./docs/sprint-status.yaml) — live tracking
+## The solution
 
----
+Auspex is an escrow protocol where the arbiter is on-chain AI. A client locks STT against a plain-text brief and names a deliverer. The deliverer submits a URL. Three composed Somnia agents — JSON API, Parse Website, and an LLM judge — read the delivery, score it against the brief, and the escrow releases or refunds in the same block, with the verdict's reasoning emitted on-chain. No human, no off-chain oracle.
 
-## Repo layout
+## Demo
 
-```
-auspex/
-├── docs/         # Spec artifacts (this is where everything starts)
-├── contracts/    # Solidity + Forge + Hardhat (Epic 1)
-├── app/          # Next.js 15 + Tailwind v4 + shadcn/ui (Epics 2 + 4)
-└── bots/         # Node.js bot scripts (Epic 3)
+- **Live app** — [auspex-app.vercel.app](https://auspex-app.vercel.app)
+  - `/jobs` — post a job, watch it get judged, claim the payout (connect an injected wallet on Somnia Shannon).
+  - `/bots` — the agent-commerce dashboard. Loads in playback mode and replays a real recorded 12-job run: two bots transacting, the resolution pipeline animating, the feed filling in. "Run live demo" fires the real bots locally.
+- **Demo video** — [TODO — record before submitting]
+
+## Run locally
+
+```bash
+git clone https://github.com/Alike001/auspex.git
+cd auspex
+pnpm install
 ```
 
----
+Copy the example env files and fill in your keys (testnet only — never a mainnet key):
 
-## How to pick up a story
+```bash
+cp app/.env.example app/.env.local
+cp contracts/.env.example contracts/.env.local
+cp bots/.env.example bots/.env.local
+```
 
-1. Browse [the issues](../../issues) — each one is a self-contained story with BDD acceptance criteria
-2. Start with `story-hardhat-foundry-scaffold` (Epic 1, no dependencies)
-3. Branch: `git checkout -b feat/story-<slug>`
-4. Implement against the story's BDD criteria
-5. Run the shell verification commands from the story
-6. Open a PR — the BDD criteria become the review checklist
+```bash
+# Terminal 1 — the web app
+pnpm --filter app dev
+```
 
-Stories are sized 0.25-1 day. Follow the dependency order in [`docs/sprint-status.yaml`](./docs/sprint-status.yaml).
+```bash
+# Terminal 2 — deploy + run one full resolution end-to-end on Shannon
+pnpm --filter @auspex/contracts demo:e2e
+```
 
----
+```bash
+# Terminal 3 — the autonomous bot demo (data-fetcher posts jobs, scraper delivers + claims)
+pnpm bots:demo --count=3
+```
+
+Then open [localhost:3000](http://localhost:3000). The app runs against the live deployed contracts with no env vars at all (addresses are pinned); the `.env` files only matter for running the bots and deploying your own contracts.
+
+## Stack
+
+| Layer | Technology |
+| ----- | ---------- |
+| Smart contracts | Solidity 0.8.24 — Foundry (tests) + Hardhat (deploy + verify) |
+| Arbitration | **Somnia on-chain agents** — JSON API + Parse Website + LLM Inference, composed in one resolution |
+| Chain | **Somnia Shannon testnet** (chainId 50312) |
+| Frontend | Next.js 16 (App Router) + Tailwind v4 |
+| Web3 | wagmi v3 + RainbowKit + viem |
+| Bots | Node + tsx — `data-fetcher` (client) and `scraper` (deliverer) |
+
+## Architecture
+
+```
+                ┌──────────────────────────────┐
+  Client   ────▶│  Next.js app                 │
+  wallet        │  /jobs   (post · judge · claim)
+                │  /bots   (live agent dashboard)
+                └──────────────┬───────────────┘
+                               │ wagmi / viem · Shannon RPC
+                               ▼
+   ┌─────────────────────────────────────────────────────────┐
+   │  Somnia Shannon testnet                                  │
+   │                                                          │
+   │   EscrowFactory ──spawns──▶ Escrow (one per job)         │
+   │                                  │ resolve()             │
+   │                                  ▼                       │
+   │   AuspexResolver ── composes 3 agent calls ──┐           │
+   │     JSON API  →  Parse Website  →  LLM judge  │           │
+   │                                              ▼           │
+   │          validators sign verdict → release / refund      │
+   └─────────────────────────────────────────────────────────┘
+                               ▲
+                               │ post · deliver · claim
+   ┌───────────────────────────┴─────────────────────────────┐
+   │  Bots — data-fetcher + scraper                           │
+   │  autonomous agent-to-agent commerce (the /bots demo)     │
+   └──────────────────────────────────────────────────────────┘
+```
+
+Deployed and **source-verified** on Shannon Blockscout:
+
+| Contract | Address |
+| -------- | ------- |
+| EscrowFactory | [`0x00730838086b6f3c7a6d5443a17D021FA714FD93`](https://shannon-explorer.somnia.network/address/0x00730838086b6f3c7a6d5443a17D021FA714FD93#code) |
+| AuspexResolver | [`0x4BE05cbb9f9D527A80e0A812254b6E73F66Dbeda`](https://shannon-explorer.somnia.network/address/0x4BE05cbb9f9D527A80e0A812254b6E73F66Dbeda#code) |
+
+## Tests
+
+37 Forge tests, all passing:
+
+```bash
+pnpm --filter @auspex/contracts test
+```
+
+```
+EscrowFactory.t.sol     7 passed
+Escrow.t.sol           11 passed
+AuspexResolver.t.sol   15 passed
+SomniaConstants.t.sol   3 passed
+Smoke.t.sol             1 passed
+────────────────────────────────
+37 passed · 0 failed
+```
+
+Coverage spans the full resolver state machine (`startResolution → onMetadata → onParsed → onJudgment`, including non-platform-caller reverts), the escrow lifecycle (`submitDelivery` / `resolve` / `claim` and their revert paths), and factory job creation.
+
+## Future work
+
+- Multi-vertical briefs beyond "delivered URL" — code review, data labeling, file deliverables judged by the same composition.
+- Reputation: aggregate each address's release/refund history into an on-chain score agents can read before transacting.
+- Configurable resolution policy per job — number of agent passes, confidence threshold, optional human appeal window.
+- A dispute-stake mechanism so a losing party can escalate to a second, larger agent panel.
+- Mainnet deployment once the contracts are audited.
 
 ## Builder
 
-[Hammed Ali Oyeleye](https://github.com/Alike001) (`Alike001`) — frontend developer, Solidity beginner, building Auspex in public.
-
----
+- **Hammed Ali Oyeleye** — Smart contracts, frontend, and bots — [GitHub](https://github.com/Alike001) · [Telegram](https://t.me/IamAlikeX)
 
 ## License
 
