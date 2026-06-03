@@ -55,7 +55,7 @@ export function watchAuspexEvents(onEvent: (event: AuspexEvent) => void): () => 
             toBlock: latest,
           });
           for (const lg of created) {
-            const a = lg.args as { escrow?: Address; deliverer?: Address; amount?: bigint };
+            const a = lg.args as { escrow?: Address; client?: Address; deliverer?: Address; amount?: bigint };
             if (!a.escrow || !a.deliverer || a.amount === undefined) continue;
             seen.add(a.escrow);
             // Read + decode the brief so the live event matches the playback shape
@@ -79,6 +79,7 @@ export function watchAuspexEvents(onEvent: (event: AuspexEvent) => void): () => 
               brief,
               amount: formatAmount(a.amount).replace(" STT", ""),
               deliverer: a.deliverer,
+              client: a.client,
             });
           }
 
