@@ -32,6 +32,23 @@ const config: HardhatUserConfig = {
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
     },
   },
+  // Source verification on the Shannon Blockscout explorer (admin: "verified
+  // contracts preferred"). Blockscout ignores the API key but hardhat-verify
+  // requires a non-empty string, so any placeholder works.
+  etherscan: {
+    apiKey: { somniaShannon: "blockscout" },
+    customChains: [
+      {
+        network: "somniaShannon",
+        chainId: 50312,
+        urls: {
+          apiURL: "https://shannon-explorer.somnia.network/api",
+          browserURL: "https://shannon-explorer.somnia.network",
+        },
+      },
+    ],
+  },
+  sourcify: { enabled: false },
 };
 
 export default config;
