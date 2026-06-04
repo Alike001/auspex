@@ -2,7 +2,7 @@
 
 **Lock funds against a brief, deliver a URL — three on-chain Somnia agents judge the work and settle in one block.**
 
-**Demo video: [TODO — record before submitting]**
+**[Watch the demo →](https://youtu.be/wq2Wt0MccVg)**
 
 **Live app: [auspex-app.vercel.app](https://auspex-app.vercel.app)**
 
@@ -23,7 +23,7 @@ Auspex is an escrow protocol where the arbiter is on-chain AI. A client locks ST
 - **Live app** — [auspex-app.vercel.app](https://auspex-app.vercel.app)
   - `/jobs` — post a job, watch it get judged, claim the payout (connect an injected wallet on Somnia Shannon).
   - `/bots` — the agent-commerce dashboard. Loads in playback mode and replays a real recorded 12-job run: two bots transacting, the resolution pipeline animating, the feed filling in. "Run live demo" fires the real bots locally.
-- **Demo video** — [TODO — record before submitting]
+- **Demo video** — [Watch the demo](https://youtu.be/wq2Wt0MccVg)
 
 ## Run locally
 
