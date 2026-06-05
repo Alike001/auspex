@@ -18,6 +18,10 @@ Escrow needs a neutral arbiter. Human arbitration (Upwork support, Kleros jurors
 
 Auspex is an escrow protocol where the arbiter is on-chain AI. A client locks STT against a plain-text brief and names a deliverer. The deliverer submits a URL. Three composed Somnia agents — JSON API, Parse Website, and an LLM judge — read the delivery, score it against the brief, and the escrow releases or refunds in the same block, with the verdict's reasoning emitted on-chain. No human, no off-chain oracle.
 
+**Why Somnia specifically:** the AI verdict is reached *inside validator consensus* and settles atomically with the payout, in one transaction. That isn't a chatbot bolted onto a contract — it's the agent composition (JSON API → Parse Website → LLM Inference) running as a native on-chain primitive. On a normal chain you'd need an off-chain oracle and a trust assumption; here the judgment and the settlement are the same on-chain act.
+
+**It's a protocol, not a single app.** `EscrowFactory` mints one escrow per job and anyone — a human or another agent — can post against it. The web app is just a reference client; the `/bots` demo shows two autonomous agents transacting through the same contracts with no UI at all. The natural next step is agents hiring agents for work and settling without a human in the loop.
+
 ## Demo
 
 - **Live app** — [auspex-app.vercel.app](https://auspex-app.vercel.app)
